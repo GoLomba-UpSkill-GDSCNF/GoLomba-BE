@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -16,7 +17,7 @@ type Instance struct {
 var DB Instance
 
 func Connect() {
-	dsn := "root:root@tcp(localhost:3306)/golomba_db?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root@tcp(localhost:3306)/golomba_db?charset=utf8mb4&parseTime=True&loc=Local"
 	dbConnection, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -26,9 +27,10 @@ func Connect() {
 
 	log.Println("Database connected!")
 	dbConnection.Logger = logger.Default.LogMode(logger.Info)
-
 	log.Println("Running migrations...")
-	// TODO: Add migrations
+
+	// Add migrations
+	dbConnection.AutoMigrate(&models.User{}, &models.Role{}, &models.Tag{}, &models.Competition{}, &models.EducationLevel{}, &models.Testimonial{})
 
 	DB = Instance{Db: dbConnection}
 }
