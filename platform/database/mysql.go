@@ -27,9 +27,9 @@ func Connect() {
 
 	log.Println("Database connected!")
 	dbConnection.Logger = logger.Default.LogMode(logger.Info)
-	log.Println("Running migrations...")
 
 	// Add migrations
+	log.Println("Running migrations...")
 	dbConnection.AutoMigrate(&models.User{}, &models.Role{}, &models.Tag{}, &models.Competition{}, &models.EducationLevel{}, &models.Testimonial{})
 
 	DB = Instance{Db: dbConnection}
