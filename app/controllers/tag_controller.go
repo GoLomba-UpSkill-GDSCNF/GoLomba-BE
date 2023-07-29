@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/models"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/queries"
@@ -22,7 +23,25 @@ func CreateTag(c *fiber.Ctx) error {
 		})
 	}
 
-	database.DB.Db.Create(&tag)
+	err := database.DB.Db.Create(&tag).Error
+
+	if err != nil {
+		// check if tag already exists, name must be unique
+		if mysqlError, ok := err.(*mysql.MySQLError); ok && mysqlError.Number == 1062 {
+			return c.Status(400).JSON(fiber.Map{
+				"status":  "error",
+				"message": "Tag already exists",
+			})
+		}
+
+		// if other error
+		return c.Status(500).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	// database.DB.Db.Create(&tag)
 
 	return c.JSON(tag)
 }
@@ -61,7 +80,7 @@ func GetTag(c *fiber.Ctx) error {
 		// if other error
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Internal server error",
+			"message": err.Error(),
 		})
 	}
 
@@ -96,7 +115,7 @@ func UpdateTag(c *fiber.Ctx) error {
 		// if other error
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Internal server error",
+			"message": err.Error(),
 		})
 	}
 
@@ -111,10 +130,18 @@ func UpdateTag(c *fiber.Ctx) error {
 	// update tag
 	if err := database.DB.Db.Model(&tag).Updates(tag).Error; err != nil {
 
+		// check if tag already exists, name must be unique
+		if mysqlError, ok := err.(*mysql.MySQLError); ok && mysqlError.Number == 1062 {
+			return c.Status(400).JSON(fiber.Map{
+				"status":  "error",
+				"message": "Tag already exists",
+			})
+		}
+
 		// if other error
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Internal server error",
+			"message": err.Error(),
 		})
 	}
 
@@ -144,7 +171,7 @@ func DeleteTag(c *fiber.Ctx) error {
 		}
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Internal server error",
+			"message": err.Error(),
 		})
 	}
 
@@ -154,7 +181,7 @@ func DeleteTag(c *fiber.Ctx) error {
 		// if other error
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Internal server error",
+			"message": err.Error(),
 		})
 	}
 
