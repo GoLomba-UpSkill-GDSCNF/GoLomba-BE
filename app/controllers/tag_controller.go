@@ -49,7 +49,23 @@ func CreateTag(c *fiber.Ctx) error {
 // Get all tags handler
 func GetTags(c *fiber.Ctx) error {
 	var tags []models.Tag
-	database.DB.Db.Order("id asc").Find(&tags)
+
+	// get all tags
+	if err := database.DB.Db.Order("id asc").Find(&tags).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	// check if tags is empty
+	if len(tags) == 0 {
+		return c.Status(404).JSON(fiber.Map{
+			"status":  "error",
+			"message": "No tags found",
+		})
+	}
+
 	return c.JSON(tags)
 }
 
