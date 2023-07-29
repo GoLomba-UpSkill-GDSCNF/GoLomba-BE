@@ -11,3 +11,9 @@ func FindTagByID(id string) *gorm.DB {
 
 	return database.DB.Db.First(&tag, id)
 }
+
+func FindTagByName(name string) *gorm.DB {
+	var tag models.Tag
+
+	return database.DB.Db.Where("name = ?", name).First(&tag)
+}
