@@ -38,7 +38,7 @@ func (u *UserController) Register(c *fiber.Ctx) error {
 		return utils.SendResponse(c, fiber.StatusInternalServerError, "registration failed", nil)
 	}
 
-	return utils.SendResponse(c, fiber.StatusOK, "success create user", nil)
+	return utils.SendResponse(c, fiber.StatusCreated, "success create user", nil)
 }
 
 func (u *UserController) Login(c *fiber.Ctx) error {
@@ -49,7 +49,7 @@ func (u *UserController) Login(c *fiber.Ctx) error {
 	}
 
 	if isEmailRegistered := utils.EmailChecker(user.Email); !isEmailRegistered {
-		return utils.SendResponse(c, fiber.StatusBadRequest, "email or password wrong", nil)
+		return utils.SendResponse(c, fiber.StatusUnauthorized, "email or password wrong", nil)
 	}
 
 
@@ -61,7 +61,7 @@ func (u *UserController) Login(c *fiber.Ctx) error {
 
 	if err = utils.ComparePassword(user.Password, hashedPassword); err != nil {
 		log.Println(err.Error())
-		return utils.SendResponse(c, fiber.StatusBadRequest, "email or password wrong", nil)
+		return utils.SendResponse(c, fiber.StatusUnauthorized, "email or password wrong", nil)
 	}
 
 	dataUser := queries.GetUserByEmail(user.Email)
