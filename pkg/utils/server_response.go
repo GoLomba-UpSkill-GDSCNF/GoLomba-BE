@@ -48,10 +48,10 @@ func IDNotFound(field string) ServerResponse {
 	}
 }
 
-func ErrParseParam(id string) ServerResponse {
+func ErrInvalidParam(id string) ServerResponse {
 	return ServerResponse{
 		Status:  "error",
-		Message: "Invalid " + id + " param",
+		Message: "Invalid " + id + " parameter",
 	}
 }
 
