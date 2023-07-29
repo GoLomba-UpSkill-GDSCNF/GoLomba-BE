@@ -7,13 +7,9 @@ import (
 )
 
 func FindTagByID(id string) *gorm.DB {
-	var tag models.Tag
-
-	return database.DB.Db.First(&tag, id)
+	return database.DB.Db.First(&models.Tag{}, id)
 }
 
 func FindTagByName(name string) *gorm.DB {
-	var tag models.Tag
-
-	return database.DB.Db.Where("name = ?", name).First(&tag)
+	return database.DB.Db.Where("name = ?", name).First(&models.Tag{})
 }

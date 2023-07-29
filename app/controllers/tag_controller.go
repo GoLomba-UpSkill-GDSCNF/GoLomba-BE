@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,7 +30,6 @@ func CreateTag(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
-	// database.DB.Db.Create(&tag)
 
 	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated(tag))
 }
@@ -59,12 +57,12 @@ func GetTag(c *fiber.Ctx) error {
 
 	// check if param is valid
 	if _, err := strconv.ParseUint(id, 10, 64); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrParseParam(id))
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam(id))
 	}
 
 	var tag models.Tag
 
-	// check if tag exists, if true then scan to tag
+	// check if tag exists, if true then assign to tag
 	if err := queries.FindTagByID(id).Scan(&tag).Error; err != nil {
 
 		// check if tag not found
@@ -85,16 +83,16 @@ func UpdateTag(c *fiber.Ctx) error {
 
 	// check if param is valid
 	if _, err := strconv.ParseUint(id, 10, 64); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrParseParam(id))
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam(id))
 	}
 
 	var tag models.Tag
 
-	// check if tag exists, if true then scan to tag
+	// check if tag exists, if true then assign to tag
 	if err := queries.FindTagByID(id).Scan(&tag).Error; err != nil {
 
 		// check if tag not found
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if gorm.ErrRecordNotFound.Error() == err.Error() {
 			return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("Tag"))
 		}
 
@@ -129,16 +127,19 @@ func DeleteTag(c *fiber.Ctx) error {
 
 	// check if param is valid
 	if _, err := strconv.ParseUint(id, 10, 64); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrParseParam(id))
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam(id))
 	}
 
 	var tag models.Tag
 
 	// check if tag exists
 	if err := queries.FindTagByID(id).Scan(&tag).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+
+		if gorm.ErrRecordNotFound.Error() == err.Error() {
 			return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("Tag"))
 		}
+
+		// if other error
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
@@ -149,5 +150,5 @@ func DeleteTag(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(utils.SuccessDeleted(&tag))
+	return c.Status(fiber.StatusOK).JSON(utils.SuccessDeleted(tag))
 }
