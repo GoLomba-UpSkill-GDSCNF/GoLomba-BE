@@ -7,7 +7,7 @@ import (
 )
 
 type Input interface {
-	models.Tag
+	models.Tag | models.EducationLevel
 }
 
 type ErrorResponse struct {
