@@ -13,8 +13,8 @@ func New() *fiber.App {
 	app.Use(logger.New(logger.Config{}))
 
 	appUser := app.Group("/user")
-	appUser.Get("/register", middleware.ValidateUser, userController.Register)
-	appUser.Get("/login", middleware.ValidateUser, userController.Login)
+	appUser.Post("/register", middleware.ValidateUser, userController.Register)
+	appUser.Post("/login", middleware.ValidateUser, userController.Login)
 
 	return app
 }
