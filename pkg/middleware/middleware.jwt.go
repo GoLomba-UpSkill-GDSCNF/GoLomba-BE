@@ -29,3 +29,15 @@ func CreateToken(id, role uint) (string, error) {
 	return t, nil
 }
 
+func CheckTokenValue(token string) (interface{}, interface{}, error) {
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{},error) {
+		return []byte(repository.JWT_SECRET), nil
+	})
+
+	if err != nil {
+		return 0,0, err
+	}
+
+	return claims["id"], claims["role"],nil
+}

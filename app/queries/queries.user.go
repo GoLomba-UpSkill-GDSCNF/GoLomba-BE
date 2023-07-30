@@ -26,3 +26,13 @@ func GetUserHashedPassword(email string) (string, error) {
 	
 	return user.Password, nil
 }
+
+func CheckUser(id int) bool {
+	var user models.User
+	database.DB.Table("users").Find(&user, id)
+	if user.ID == 0 {
+		return false
+	}
+
+	return true
+}

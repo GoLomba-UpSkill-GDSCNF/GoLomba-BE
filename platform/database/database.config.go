@@ -18,5 +18,5 @@ func InitDB() {
 		panic(err)
 	}
 
-	DB.AutoMigrate(models.User{})
+	DB.AutoMigrate(models.User{}, models.Role{}, models.Testimonial{})
 }
