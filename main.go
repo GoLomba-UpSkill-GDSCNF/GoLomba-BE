@@ -15,6 +15,7 @@ func main() {
 
 	routes.SetupTagRoutes(app)
 	routes.SetupEducationLevelRoutes(app)
+	routes.SetupCompetitionRoutes(app)
 
 	app.Get("/api", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
