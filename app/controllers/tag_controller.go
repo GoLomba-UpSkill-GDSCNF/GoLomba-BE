@@ -150,5 +150,5 @@ func DeleteTag(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(utils.SuccessDeleted(tag))
+	return c.Status(fiber.StatusOK).JSON(utils.SuccessDeleted())
 }
