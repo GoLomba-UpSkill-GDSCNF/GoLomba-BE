@@ -71,10 +71,23 @@ func SuccessUpdated(data interface{}) ServerResponse {
 	}
 }
 
-func SuccessDeleted(data interface{}) ServerResponse {
+func SuccessDeleted() ServerResponse {
 	return ServerResponse{
 		Status:  "success",
 		Message: "Deleted successfully",
-		Data:    data,
+	}
+}
+
+func InvalidData(err error) ServerResponse {
+	return ServerResponse{
+		Status:  "error",
+		Message: "Invalid data, " + err.Error(),
+	}
+}
+
+func CustomError(message string) ServerResponse {
+	return ServerResponse{
+		Status:  "error",
+		Message: message,
 	}
 }
