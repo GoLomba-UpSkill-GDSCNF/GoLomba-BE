@@ -31,7 +31,7 @@ func CreateTag(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated(tag))
+	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated())
 }
 
 // Get all tags handler
@@ -118,7 +118,7 @@ func UpdateTag(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(utils.SuccessUpdated(tag))
+	return c.Status(fiber.StatusOK).JSON(utils.SuccessUpdated())
 }
 
 // Delete tag by id handler

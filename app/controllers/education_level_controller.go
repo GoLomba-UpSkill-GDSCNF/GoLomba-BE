@@ -31,7 +31,7 @@ func CreateEducationLevel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated(educationLevel))
+	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated())
 }
 
 // Get all educationLevels handler
@@ -116,7 +116,7 @@ func UpdateEducationLevel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(utils.SuccessUpdated(educationLevel))
+	return c.Status(fiber.StatusOK).JSON(utils.SuccessUpdated())
 }
 
 func DeleteEducationLevel(c *fiber.Ctx) error {

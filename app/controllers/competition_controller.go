@@ -117,7 +117,9 @@ func CreateCompetition(c *fiber.Ctx) error {
 	// 	return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	// }
 
-	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated(competition))
+	_ = competition
+
+	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated())
 }
 
 // Get all competitions handler
@@ -270,11 +272,11 @@ func UpdateCompetition(c *fiber.Ctx) error {
 	}
 
 	// update competition in db
-	if err := database.DB.Db.Model(&competition).Where("id = ?", id).Updates(competition).Error; err != nil {
+	if err := database.DB.Db.Model(&competition).Updates(competition).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(utils.SuccessUpdated(competition))
+	return c.Status(fiber.StatusOK).JSON(utils.SuccessUpdated())
 }
 
 // Delete competition by id handler

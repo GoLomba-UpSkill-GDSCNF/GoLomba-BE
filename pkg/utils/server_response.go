@@ -55,19 +55,17 @@ func ErrInvalidParam(id string) ServerResponse {
 	}
 }
 
-func SuccessCreated(data interface{}) ServerResponse {
+func SuccessCreated() ServerResponse {
 	return ServerResponse{
 		Status:  "success",
 		Message: "Created successfully",
-		Data:    data,
 	}
 }
 
-func SuccessUpdated(data interface{}) ServerResponse {
+func SuccessUpdated() ServerResponse {
 	return ServerResponse{
 		Status:  "success",
 		Message: "Updated successfully",
-		Data:    data,
 	}
 }
 
