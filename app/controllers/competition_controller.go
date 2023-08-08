@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -24,72 +22,20 @@ func CreateCompetition(c *fiber.Ctx) error {
 	}
 
 	// get end_registration_date from form
-	endRegistrationDateStr := "2022-01-02"
+	endRegistrationDateStr := input.EndRegistrationDate                          // "2021-10-10"
 	endRegistrationDate, err := time.Parse("2006-01-02", endRegistrationDateStr) // convert string to time.Time
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("end_registration_date"))
 	}
 
-	// find Tags by id
-	var tags []models.Tag
-	for _, tag := range input.Tags {
-
-		// check if there is id provided
-		if tag.ID == 0 {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("tag_id is required"))
-		}
-
-		// check if the input is uint type, even though it's already validated in pkg\middleware\validator.go
-		if reflect.TypeOf(tag.ID).Kind() != reflect.Uint {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("tag_id"))
-		}
-
-		tagID := tag.ID
-		var tag models.Tag
-
-		// convert input to string
-		tagIDStr := fmt.Sprint(tagID)
-
-		// check if tag exists
-		if err := queries.FindTagByID(tagIDStr).Scan(&tag).Error; err != nil {
-			// check if tag not found
-			if gorm.ErrRecordNotFound.Error() == err.Error() {
-				return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("Tag"))
-			}
-			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
-		}
-		tags = append(tags, tag)
+	tags, status, serverResponse := queries.FindTagsByIds(input.Tags) // iterate through tags and find tags by id
+	if status != 0 {
+		return c.Status(status).JSON(serverResponse)
 	}
 
-	// find EducationLevel by id
-	var educationLevels []models.EducationLevel
-	for _, educationLevel := range input.EducationLevels {
-
-		// check if there is id provided
-		if educationLevel.ID == 0 {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("education_level_id is required"))
-		}
-
-		// check if the input is uint type, even though it's already validated in pkg\middleware\validator.go
-		if reflect.TypeOf(educationLevel.ID).Kind() != reflect.Uint {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("education_level_id"))
-		}
-
-		educationLevelID := educationLevel.ID
-		var educationLevel models.EducationLevel
-
-		// convert input to string
-		educationLevelIDStr := fmt.Sprint(educationLevelID)
-
-		// check if education level exists
-		if err := queries.FindEducationLevelByID(educationLevelIDStr).Scan(&educationLevel).Error; err != nil {
-			// check if education level not found
-			if gorm.ErrRecordNotFound.Error() == err.Error() {
-				return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("Education Level"))
-			}
-			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
-		}
-		educationLevels = append(educationLevels, educationLevel)
+	educationLevels, status, serverResponse := queries.FindEducationLevelsByIds(input.EducationLevels) // iterate through education_levels and find education_levels by id
+	if status != 0 {
+		return c.Status(status).JSON(serverResponse)
 	}
 
 	// check/find if user exists
@@ -197,66 +143,14 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("end_registration_date"))
 	}
 
-	// find Tags by id
-	var tags []models.Tag
-	for _, tag := range input.Tags {
-
-		// check if there is id provided
-		if tag.ID == 0 {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("tag_id is required"))
-		}
-
-		// check if the input is uint type, even though it's already validated in pkg\middleware\validator.go
-		if reflect.TypeOf(tag.ID).Kind() != reflect.Uint {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("tag_id"))
-		}
-
-		tagID := tag.ID
-		var tag models.Tag
-
-		// convert input to string
-		tagIDStr := fmt.Sprint(tagID)
-
-		// check if tag exists
-		if err := queries.FindTagByID(tagIDStr).Scan(&tag).Error; err != nil {
-			// check if tag not found
-			if gorm.ErrRecordNotFound.Error() == err.Error() {
-				return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("Tag"))
-			}
-			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
-		}
-		tags = append(tags, tag)
+	tags, status, serverResponse := queries.FindTagsByIds(input.Tags) // iterate through tags and find tags by id
+	if status != 0 {
+		return c.Status(status).JSON(serverResponse)
 	}
 
-	// find EducationLevel by id
-	var educationLevels []models.EducationLevel
-	for _, educationLevel := range input.EducationLevels {
-
-		// check if there is id provided
-		if educationLevel.ID == 0 {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("education_level_id is required"))
-		}
-
-		// check if the input is uint type, even though it's already validated in pkg\middleware\validator.go
-		if reflect.TypeOf(educationLevel.ID).Kind() != reflect.Uint {
-			return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("education_level_id"))
-		}
-
-		educationLevelID := educationLevel.ID
-		var educationLevel models.EducationLevel
-
-		// convert input to string
-		educationLevelIDStr := fmt.Sprint(educationLevelID)
-
-		// check if education level exists
-		if err := queries.FindEducationLevelByID(educationLevelIDStr).Scan(&educationLevel).Error; err != nil {
-			// check if education level not found
-			if gorm.ErrRecordNotFound.Error() == err.Error() {
-				return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("Education Level"))
-			}
-			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
-		}
-		educationLevels = append(educationLevels, educationLevel)
+	educationLevels, status, serverResponse := queries.FindEducationLevelsByIds(input.EducationLevels) // iterate through education_levels and find education_levels by id
+	if status != 0 {
+		return c.Status(status).JSON(serverResponse)
 	}
 
 	// assign input to competition struct
