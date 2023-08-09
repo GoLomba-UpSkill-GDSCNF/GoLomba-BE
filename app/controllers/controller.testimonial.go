@@ -24,12 +24,7 @@ func (t *TestimonyControllers) Add(c *fiber.Ctx) error {
 	userID, _, err :=  middleware.CheckTokenValue(tokenJWT)
 	if err != nil {
 		log.Println(err)
-		return utils.SendResponse(c, fiber.StatusBadRequest, "invalid or expired token", nil)
-	}
-	
-	
-	if isUserExist := queries.CheckUser(int(userID.(float64))); !isUserExist {
-		return utils.SendResponse(c, fiber.StatusNotFound, "user with the provided user_id does not exist.", nil)
+		return utils.SendResponse(c, fiber.StatusUnauthorized, "invalid or expired token", nil)
 	}
 	
 	testimony.UserID = uint(userID.(float64))
