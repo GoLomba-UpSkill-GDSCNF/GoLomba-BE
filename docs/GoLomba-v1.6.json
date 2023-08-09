@@ -1,2134 +1,2125 @@
 {
-    "openapi": "3.0.3",
-    "info": {
-        "title": "GoLomba RESTful API",
-        "version": "1.6",
-        "description": "API contract for GoLomba RESTful API",
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        }
-    },
-    "servers": [
-        {
-            "description": "GoLomba API server",
-            "url": "https://{environment}.server/api/v1",
-            "variables": {
-                "environment": {
-                    "description": "Environment",
-                    "default": "dev",
-                    "enum": ["dev", "prod"]
-                }
-            }
-        }
-    ],
-    "externalDocs": {
-        "description": "Find out more about GoLomba",
-        "url": "https://golomba.io"
-    },
-    "paths": {
-        "/competitions": {
-            "get": {
-                "tags": ["competitions"],
-                "summary": "Get all competitions",
-                "description": "Get all competitions",
-                "operationId": "getCompetitions",
-                "parameters": [
-                    {
-                        "name": "search",
-                        "in": "query",
-                        "description": "Search by name or description",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "nullable": true,
-                            "minLength": 1,
-                            "maxLength": 100
-                        }
-                    },
-                    {
-                        "name": "education_level",
-                        "in": "query",
-                        "description": "Education level",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/components/schemas/education_level-params",
-                            "nullable": true
-                        }
-                    },
-                    {
-                        "name": "tags",
-                        "in": "query",
-                        "description": "Tags competition category separated by comma, e.g. tag1,tag2",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "nullable": true,
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success get all competitions",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/competition"
-                                    }
-                                },
-                                "examples": {
-                                    "success": {
-                                        "description": "Example success response get all Competitions",
-                                        "value": [
-                                            {
-                                                "id": 1,
-                                                "name": "Competition 1",
-                                                "description": "Competition 1 description",
-                                                "image": "https://golomba.io/images/competition1.jpg",
-                                                "tags": [
-                                                    {
-                                                        "id": 1
-                                                    },
-                                                    {
-                                                        "id": 2
-                                                    }
-                                                ],
-                                                "education_level_id": [
-                                                    {
-                                                        "id": 3
-                                                    },
-                                                    {
-                                                        "id": 2
-                                                    }
-                                                ],
-                                                "user_id": 1,
-                                                "end_registration_date": "2021-01-31",
-                                                "competition_url": "https://golomba.io/competition1"
-                                            },
-                                            {
-                                                "id": 2,
-                                                "name": "Competition 2",
-                                                "description": "Competition 2 description",
-                                                "image": "https://golomba.io/images/competition2.jpg",
-                                                "tags": [
-                                                    {
-                                                        "id": 2
-                                                    },
-                                                    {
-                                                        "id": 4
-                                                    }
-                                                ],
-                                                "education_level_id": [
-                                                    {
-                                                        "id": 1
-                                                    },
-                                                    {
-                                                        "id": 2
-                                                    }
-                                                ],
-                                                "user_id": 1,
-                                                "end_registration_date": "2021-02-28",
-                                                "competition_url": "https://golomba.io/competition2"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "If no competition found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error404"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "If there is an unexpected error when getting all competitions",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/competition": {
-            "post": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "tags": ["competitions"],
-                "summary": "Create a new competition",
-                "description": "Create a new competition in database",
-                "operationId": "createCompetition",
-                "requestBody": {
-                    "required": true,
-                    "description": "Competition object that needs to be added to the store",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/competition"
-                            },
-                            "examples": {
-                                "competition 1": {
-                                    "$ref": "#/components/examples/competition1"
-                                },
-                                "competition 2": {
-                                    "$ref": "#/components/examples/competition2"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Success create a new competition",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "example": {
-                                    "status": "success",
-                                    "message": "Competition created successfully"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "description": "Example error response if the request body is invalid",
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Invalid Data, {{error message}}"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error401"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/competition/{competitionId}": {
-            "get": {
-                "tags": ["competitions"],
-                "summary": "Get competition by id",
-                "description": "Get single competition by id",
-                "operationId": "getCompetitionById",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/competitionId"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success get competition by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/competition"
-                                },
-                                "examples": {
-                                    "competition 1": {
-                                        "$ref": "#/components/examples/competition1"
-                                    },
-                                    "competition 2": {
-                                        "$ref": "#/components/examples/competition2"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "If no competition found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error404"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "If there is an unexpected error when getting competition by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "tags": ["competitions"],
-                "summary": "Update existing competition",
-                "description": "Update existing competition in database",
-                "operationId": "updateCompetition",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/competitionId"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Competition object that needs to be added to the store",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/competition"
-                            },
-                            "examples": {
-                                "competition 1": {
-                                    "$ref": "#/components/examples/competition1"
-                                },
-                                "competition 2": {
-                                    "$ref": "#/components/examples/competition2"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Success update existing competition",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "example": {
-                                    "status": "success",
-                                    "message": "Competition updated successfully"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request, if something wrong with the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error400"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error401"
-                                    }
-                                }
-                            }
-                        }
-                    },
-
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "example": {
-                                    "status": "error",
-                                    "message": "Competition not found"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "tags": ["competitions"],
-                "summary": "Delete existing competition",
-                "description": "Delete existing competition in database",
-                "operationId": "deleteCompetition",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/competitionId"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success delete existing competition",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "example": {
-                                    "status": "success",
-                                    "message": "Competition deleted successfully"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error401"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "If no competition found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error404"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tags": {
-            "get": {
-                "summary": "Get all tags",
-                "description": "Get all tags from database",
-                "tags": ["tags"],
-                "operationId": "getTags",
-                "responses": {
-                    "200": {
-                        "description": "Success get all tags",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tag"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": [
-                                            {
-                                                "id": 1,
-                                                "name": "tag1"
-                                            },
-                                            {
-                                                "id": 2,
-                                                "name": "tag2"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404":{
-                        "description": "if there is no tags in database",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "example": {
-                                    "status": "error",
-                                    "message": "Tags not found"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict, if something wrong with the request, name must be unique",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Tag already exist"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tag": {
-            "post": {
-                "summary": "Create new tag",
-                "description": "Create new tag in database",
-                "tags": ["tags"],
-                "operationId": "createTag",
-                "requestBody": {
-                    "required": true,
-                    "description": "Tag object that needs to be added to the database",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/tag"
-                            },
-                            "examples": {
-                                "success": {
-                                    "value": {
-                                        "name": "tag1"
-                                    }
-                                },
-                                "success2": {
-                                    "value": {
-                                        "name": "tag2"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Success create new tag",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tag"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": "success",
-                                            "message": "Tag created successfully"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request, if something wrong with the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error400"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401":{
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "example": {
-                                    "status": "error",
-                                    "message": "Unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict, if something wrong with the request, name must be unique",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Tag already exist"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tag/{tagId}": {
-            "get": {
-                "summary": "Get tag by id",
-                "description": "Get tag by id from database",
-                "tags": ["tags"],
-                "operationId": "getTagById",
-                "parameters": [
-                    {
-                        "name": "tagId",
-                        "in": "path",
-                        "description": "ID of tag to return",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success get tag by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tag"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "id": 1,
-                                            "name": "tag1"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request, if something wrong with the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error400"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tag not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Tag not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update tag by id",
-                "description": "Update tag by id in database",
-                "tags": ["tags"],
-                "operationId": "updateTagById",
-                "parameters": [
-                    {
-                        "name": "tagId",
-                        "in": "path",
-                        "description": "ID of tag to return",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "description": "Tag object that needs to be updated in the database",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/tag"
-                            },
-                            "examples": {
-                                "success": {
-                                    "value": {
-                                        "name": "tag1"
-                                    }
-                                },
-                                "success2": {
-                                    "value": {
-                                        "name": "tag2"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Success update tag by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tag"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": "success",
-                                            "message": "Tag updated successfully"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request, if something wrong with the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error400"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized, permission denied",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Unauthorized"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete tag by id",
-                "description": "Delete tag by id from database",
-                "tags": ["tags"],
-                "operationId": "deleteTagById",
-                "parameters": [
-                    {
-                        "name": "tagId",
-                        "in": "path",
-                        "description": "ID of tag to return",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success delete tag by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tag"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": "success",
-                                            "message": "Tag deleted successfully"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized, permission denied",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Unauthorized"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tag not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Tag not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/edu-levels": {
-            "get": {
-                "summary": "Get all education levels",
-                "description": "Get all education levels from database",
-                "tags": ["edu-levels"],
-                "operationId": "getEduLevels",
-                "responses": {
-                    "200": {
-                        "description": "Success get all education levels",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/eduLevel"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": [
-                                            {
-                                                "id": 1,
-                                                "name": "SD"
-                                            },
-                                            {
-                                                "id": 2,
-                                                "name": "SMP"
-                                            },
-                                            {
-                                                "id": 3,
-                                                "name": "SMA"
-                                            },
-                                            {
-                                                "id": 4,
-                                                "name": "S1"
-                                            },
-                                            {
-                                                "id": 5,
-                                                "name": "S2"
-                                            },
-                                            {
-                                                "id": 6,
-                                                "name": "S3"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404":{
-                        "description": "if there is no education levels in database",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "409":{
-                        "description": "Conflict, if something wrong with the request, name must be unique",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level already exist"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500":{
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/edu-level":{
-            "post":{
-                "description": "Create new education level in database",
-                "summary": "Create new education level",
-                "tags": ["edu-levels"],
-                "operationId": "createEduLevel",
-                "requestBody": {
-                    "required": true,
-                    "description": "Education level object that needs to be added to the database",
-                    "content": {
-                        "application/json": {
-                            "schema": 
-                                {
-                                    "$ref": "#/components/schemas/eduLevel"
-                                },
-                            "examples": {
-                                "success": {
-                                    "value": {
-                                        "name": "S4"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201":{
-                        "description": "Success create new education level",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "success": {
-                                    "value":{
-                                        "status": "success",
-                                        "message": "Education level created successfully"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400":{
-                        "description": "Bad Request, if something wrong with the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Bad Request"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401":{
-                        "description": "Unauthorized, if user not authorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Unauthorized"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "409":{
-                        "description": "Conflict, if something wrong with the request, name must be unique",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level already exist"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500":{
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/edu-level/{edu-levelId}":{
-            "get":{
-                "description": "Get education level by id",
-                "summary": "Get education level by id",
-                "tags": ["edu-levels"],
-                "operationId": "getEduLevelById",
-                "parameters": [
-                    {
-                        "name": "edu-levelId",
-                        "in": "path",
-                        "description": "ID of education level that needs to be fetched",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200":{
-                        "description": "Success get education level by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/eduLevel"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "id": 1,
-                                            "name": "SD"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404":{
-                        "description": "if there is no education level with that id in database",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500":{
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put":{
-                "description": "Update education level by id",
-                "summary": "Update education level by id",
-                "tags": ["edu-levels"],
-                "operationId": "updateEduLevelById",
-                "parameters": [
-                    {
-                        "name": "edu-levelId",
-                        "in": "path",
-                        "description": "ID of education level that needs to be updated",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "description": "Education level object that needs to be updated",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/eduLevel"
-                            },
-                            "examples": {
-                                "success": {
-                                    "value": {
-                                        "name": "S4"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201":{
-                        "description": "Success update education level by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": "success",
-                                            "message": "Education level updated successfully"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400":{
-                        "description": "Bad Request, if something wrong with the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Bad Request"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401":{
-                        "description": "Unauthorized, if user not authorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Unauthorized"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404":{
-                        "description": "if there is no education level with that id in database",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "409":{
-                        "description": "Conflict, if something wrong with the request, name must be unique",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level already exist"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500":{
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete":{
-                "description": "Delete education level by id",
-                "summary": "Delete education level by id",
-                "tags": ["edu-levels"],
-                "operationId": "deleteEduLevelById",
-                "parameters": [
-                    {
-                        "name": "edu-levelId",
-                        "in": "path",
-                        "description": "ID of education level that needs to be deleted",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200":{
-                        "description": "Success delete education level by id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": "success",
-                                            "message": "Education level deleted successfully"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401":{
-                        "description": "Unauthorized, if you are not logged in",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Unauthorized"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404":{
-                        "description": "if there is no education level with that id in database",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "value": {
-                                            "status": "error",
-                                            "message": "Education level not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500":{
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples":{
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/register": {
-            "post": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "tags": ["users"],
-                "summary": "User Register",
-                "description": "Register to the application with username and password",
-                "operationId": "register",
-                "requestBody": {
-                    "required": true,
-                    "description": "User object that needs to register",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "username": {
-                                        "type": "string"
-                                    },
-                                    "email": {
-                                        "type": "string"
-                                    },
-                                    "password": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": ["username", "email", "password"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Register successful. Returns an access token.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "description": "Success register"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Success register"
-                                        }
-                                    }
-                                },
-                                "example": {
-                                    "success": "true",
-                                    "message": "Success register your account. Please login to continue."
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error400"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/login": {
-            "post": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "tags": ["users"],
-                "summary": "User Login",
-                "description": "Login to the application with username and password",
-                "operationId": "login",
-                "requestBody": {
-                    "required": true,
-                    "description": "User object that needs to check login",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "username": {
-                                        "type": "string",
-                                        "description": "Username access to application"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "description": "Password access to application"
-                                    }
-                                },
-                                "required": ["username", "password"]
-                            },
-                            "examples": {
-                                "login": {
-                                    "summary": "Example login",
-                                    "value": {
-                                        "username": "userlogin",
-                                        "password": "user432"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Login successful. Returns an access token.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "access_token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "summary": "Example error unauthorized",
-                                        "value": {
-                                            "code": 401,
-                                            "message": "Unauthorized. invalid credentials."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found. User with the provided username does not exist.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/testimonials": {
-            "get": {
-                "tags": ["testimonials"],
-                "summary": "Get all testimonials",
-                "description": "Get all testimonials from database",
-                "operationId": "getTestimonials",
-                "responses": {
-                    "200": {
-                        "description": "Success get all testimonials",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/testimonial"
-                                    }
-                                },
-                                "examples": {
-                                    "success": {
-                                        "description": "Example success response get all testimonials",
-                                        "value": [
-                                            {
-                                                "id": 1,
-                                                "user_id": 1,
-                                                "message": "Testimonial 1",
-                                                "stars": 5
-                                            },
-                                            {
-                                                "id": 2,
-                                                "user_id": 2,
-                                                "message": "Testimonial 2",
-                                                "stars": 4
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error404"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "tags": ["testimonials"],
-                "summary": "Submit a testimonial",
-                "description": "Use this endpoint to submit a testimonial.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/testimonial"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Testimonial submitted successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "description": "Success submit testimonial"
-                                        },
-                                        "testimonial": {
-                                            "$ref": "#/components/schemas/testimonial"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request. Invalid input data.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error400"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found. User with the provided user_id does not exist.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error404"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/responseMsg"
-                                },
-                                "examples": {
-                                    "error": {
-                                        "$ref": "#/components/examples/error500"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
-            }
-        },
-        "parameters": {
-            "competitionId": {
-                "name": "competitionId",
-                "in": "path",
-                "description": "Competition ID",
-                "required": true,
-                "schema": {
-                    "type": "number",
-                    "format": "int64",
-                    "minLength": 1,
-                    "maxLength": 100
-                },
-                "examples": {
-                    "competitionId": {
-                        "description": "Example competition ID",
-                        "value": 1
-                    },
-                    "competitionId2": {
-                        "description": "Example competition ID",
-                        "value": 2
-                    }
-                }
-            }
-        },
-        "schemas": {
-            "eduLevel": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "The ID of the education level."
-                    },
-                    "name": {
-                        "type": "string",
-                        "description": "The name of the education level."
-                    }
-                }
-            },
-            "tag": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "The ID of the tag."
-                    },
-                    "name": {
-                        "type": "string",
-                        "description": "The name of the tag."
-                    }
-                }
-            },
-            "testimonial": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "The ID of the testimonial."
-                    },
-                    "user_id": {
-                        "type": "integer",
-                        "description": "The ID of the user who submitted the testimonial."
-                    },
-                    "message": {
-                        "type": "string",
-                        "description": "The testimonial message."
-                    },
-                    "stars": {
-                        "type": "integer",
-                        "description": "The number of stars given to the testimonial."
-                    }
-                }
-            },
-            "education_level-params": {
-                "type": "string"
-            },
-            "competition": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "number",
-                        "format": "int64",
-                        "description": "Competition ID"
-                    },
-                    "name": {
-                        "type": "string",
-                        "description": "Competition name"
-                    },
-                    "description": {
-                        "type": "string",
-                        "description": "Competition description"
-                    },
-                    "image": {
-                        "type": "string",
-                        "description": "Competition image URL"
-                    },
-                    "tags": {
-                        "type": "array",
-                        "items": {
-                            "type": "number",
-                            "format": "uint"
-                        },
-                        "description": "Competition tags id"
-                    },
-                    "education_level_id": {
-                        "type": "array",
-                        "items": {
-                            "type": "number",
-                            "format": "uint"
-                        },
-                        "description": "Education level ID"
-                    },
-                    "user_id": {
-                        "type": "number",
-                        "format": "uint",
-                        "description": "User ID"
-                    },
-                    "end_registration_date": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "Competition start date"
-                    },
-                    "competition_url": {
-                        "type": "string",
-                        "description": "Competition URL"
-                    }
-                }
-            },
-            "education_level": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "number",
-                        "format": "int64",
-                        "description": "Education level ID"
-                    },
-                    "name": {
-                        "type": "string",
-                        "description": "Education level name"
-                    }
-                }
-            },
-            "responseMsg": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "type": "string",
-                        "description": "status code, sucess or error"
-                    },
-                    "message": {
-                        "type": "string",
-                        "description": "response message"
-                    }
-                }
-            }
-        },
-        "examples": {
-            "error400": {
-                "summary": "error bad request",
-                "value": {
-                    "status": "error",
-                    "message": "Bad request"
-                }
-            },
-            "error401": {
-                "summary": "error unauthorized",
-                "value": {
-                    "status": "error",
-                    "message": "Unauthorized"
-                }
-            },
-            "error404": {
-                "summary": "error not found",
-                "value": {
-                    "status": "error",
-                    "message": "Not found"
-                }
-            },
-            "error500": {
-                "summary": "error internal server error",
-                "description": "the {{error}} is a placeholder for the error message",
-                "value": {
-                    "status": "error",
-                    "message": "Internal Server Error, {{error}}"
-                }
-            },
-            "competition1": {
-                "summary": "Example competition 1 response",
-                "value": {
-                    "name": "Competition 1",
-                    "description": "Competition 1 description",
-                    "image": "https://golomba.io/images/competition1.jpg",
-                    "tags": [
-                        {
-                            "id": 1
-                        },
-                        {
-                            "id": 2
-                        }
-                    ],
-                    "education_level_id": [
-                        {
-                            "id": 3
-                        },
-                        {
-                            "id": 2
-                        }
-                    ],
-                    "user_id": 1,
-                    "end_registration_date": "2021-01-31",
-                    "competition_url": "https://golomba.io/competition1"
-                }
-            },
-            "competition2": {
-                "summary": "Example competition 2 response",
-                "value": {
-                    "name": "Competition 2",
-                    "description": "Competition 2 description",
-                    "image": "https://golomba.io/images/competition2.jpg",
-                    "tags": [
-                        {
-                            "id": 2
-                        },
-                        {
-                            "id": 4
-                        }
-                    ],
-                    "education_level_id": [
-                        {
-                            "id": 1
-                        },
-                        {
-                            "id": 2
-                        }
-                    ],
-                    "user_id": 1,
-                    "end_registration_date": "2021-02-28",
-                    "competition_url": "https://golomba.io/competition2"
-                }
-            }
-        }
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "GoLomba RESTful API",
+    "version" : "1.6",
+    "description" : "API contract for GoLomba RESTful API",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
+  },
+  "servers" : [ {
+    "description" : "GoLomba API server",
+    "url" : "https://{environment}.server/api/v1",
+    "variables" : {
+      "environment" : {
+        "description" : "Environment",
+        "default" : "dev",
+        "enum" : [ "dev", "prod" ]
+      }
+    }
+  } ],
+  "externalDocs" : {
+    "description" : "Find out more about GoLomba",
+    "url" : "https://golomba.io"
+  },
+  "paths" : {
+    "/competitions" : {
+      "get" : {
+        "tags" : [ "competitions" ],
+        "summary" : "Get all competitions",
+        "description" : "Get all competitions",
+        "operationId" : "getCompetitions",
+        "parameters" : [ {
+          "name" : "search",
+          "in" : "query",
+          "description" : "Search by name or description",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : true,
+            "minLength" : 1,
+            "maxLength" : 100
+          }
+        }, {
+          "name" : "education_level",
+          "in" : "query",
+          "description" : "Education level",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/education_level-params",
+            "nullable" : true
+          }
+        }, {
+          "name" : "tags",
+          "in" : "query",
+          "description" : "Tags competition category separated by comma, e.g. tag1,tag2",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "nullable" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success get all competitions",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/competition"
+                  }
+                },
+                "examples" : {
+                  "success" : {
+                    "description" : "Example success response get all Competitions",
+                    "value" : [ {
+                      "id" : 1,
+                      "name" : "Competition 1",
+                      "description" : "Competition 1 description",
+                      "image" : "https://golomba.io/images/competition1.jpg",
+                      "tags" : [ {
+                        "id" : 1
+                      }, {
+                        "id" : 2
+                      } ],
+                      "education_level_id" : [ {
+                        "id" : 3
+                      }, {
+                        "id" : 2
+                      } ],
+                      "user_id" : 1,
+                      "end_registration_date" : "2021-01-31",
+                      "competition_url" : "https://golomba.io/competition1"
+                    }, {
+                      "id" : 2,
+                      "name" : "Competition 2",
+                      "description" : "Competition 2 description",
+                      "image" : "https://golomba.io/images/competition2.jpg",
+                      "tags" : [ {
+                        "id" : 2
+                      }, {
+                        "id" : 4
+                      } ],
+                      "education_level_id" : [ {
+                        "id" : 1
+                      }, {
+                        "id" : 2
+                      } ],
+                      "user_id" : 1,
+                      "end_registration_date" : "2021-02-28",
+                      "competition_url" : "https://golomba.io/competition2"
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "If no competition found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error404"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "If there is an unexpected error when getting all competitions",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/competition" : {
+      "post" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "tags" : [ "competitions" ],
+        "summary" : "Create a new competition",
+        "description" : "Create a new competition in database",
+        "operationId" : "createCompetition",
+        "requestBody" : {
+          "required" : true,
+          "description" : "Competition object that needs to be added to the store",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/competition"
+              },
+              "examples" : {
+                "competition 1" : {
+                  "$ref" : "#/components/examples/competition1"
+                },
+                "competition 2" : {
+                  "$ref" : "#/components/examples/competition2"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success create a new competition",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "example" : {
+                  "status" : "success",
+                  "message" : "Competition created successfully"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "description" : "Example error response if the request body is invalid",
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Invalid Data, {{error message}}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error401"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/competition/{competitionId}" : {
+      "get" : {
+        "tags" : [ "competitions" ],
+        "summary" : "Get competition by id",
+        "description" : "Get single competition by id",
+        "operationId" : "getCompetitionById",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/competitionId"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success get competition by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/competition"
+                },
+                "examples" : {
+                  "competition 1" : {
+                    "$ref" : "#/components/examples/competition1"
+                  },
+                  "competition 2" : {
+                    "$ref" : "#/components/examples/competition2"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "If no competition found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error404"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "If there is an unexpected error when getting competition by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "tags" : [ "competitions" ],
+        "summary" : "Update existing competition",
+        "description" : "Update existing competition in database",
+        "operationId" : "updateCompetition",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/competitionId"
+        } ],
+        "requestBody" : {
+          "description" : "Competition object that needs to be added to the store",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/competition"
+              },
+              "examples" : {
+                "competition 1" : {
+                  "$ref" : "#/components/examples/competition1"
+                },
+                "competition 2" : {
+                  "$ref" : "#/components/examples/competition2"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success update existing competition",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "example" : {
+                  "status" : "success",
+                  "message" : "Competition updated successfully"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request, if something wrong with the request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error400"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error401"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "example" : {
+                  "status" : "error",
+                  "message" : "Competition not found"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "tags" : [ "competitions" ],
+        "summary" : "Delete existing competition",
+        "description" : "Delete existing competition in database",
+        "operationId" : "deleteCompetition",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/competitionId"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success delete existing competition",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "example" : {
+                  "status" : "success",
+                  "message" : "Competition deleted successfully"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error401"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "If no competition found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error404"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags" : {
+      "get" : {
+        "summary" : "Get all tags",
+        "description" : "Get all tags from database",
+        "tags" : [ "tags" ],
+        "operationId" : "getTags",
+        "responses" : {
+          "200" : {
+            "description" : "Success get all tags",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/tag"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : [ {
+                      "id" : 1,
+                      "name" : "tag1"
+                    }, {
+                      "id" : 2,
+                      "name" : "tag2"
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "if there is no tags in database",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "example" : {
+                  "status" : "error",
+                  "message" : "Tags not found"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict, if something wrong with the request, name must be unique",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Tag already exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag" : {
+      "post" : {
+        "summary" : "Create new tag",
+        "description" : "Create new tag in database",
+        "tags" : [ "tags" ],
+        "operationId" : "createTag",
+        "requestBody" : {
+          "required" : true,
+          "description" : "Tag object that needs to be added to the database",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/tag"
+              },
+              "examples" : {
+                "success" : {
+                  "value" : {
+                    "name" : "tag1"
+                  }
+                },
+                "success2" : {
+                  "value" : {
+                    "name" : "tag2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success create new tag",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/tag"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "status" : "success",
+                      "message" : "Tag created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request, if something wrong with the request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error400"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "example" : {
+                  "status" : "error",
+                  "message" : "Unauthorized"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict, if something wrong with the request, name must be unique",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Tag already exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag/{tagId}" : {
+      "get" : {
+        "summary" : "Get tag by id",
+        "description" : "Get tag by id from database",
+        "tags" : [ "tags" ],
+        "operationId" : "getTagById",
+        "parameters" : [ {
+          "name" : "tagId",
+          "in" : "path",
+          "description" : "ID of tag to return",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success get tag by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/tag"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "id" : 1,
+                      "name" : "tag1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request, if something wrong with the request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error400"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Tag not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Tag not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update tag by id",
+        "description" : "Update tag by id in database",
+        "tags" : [ "tags" ],
+        "operationId" : "updateTagById",
+        "parameters" : [ {
+          "name" : "tagId",
+          "in" : "path",
+          "description" : "ID of tag to return",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "description" : "Tag object that needs to be updated in the database",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/tag"
+              },
+              "examples" : {
+                "success" : {
+                  "value" : {
+                    "name" : "tag1"
+                  }
+                },
+                "success2" : {
+                  "value" : {
+                    "name" : "tag2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success update tag by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/tag"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "status" : "success",
+                      "message" : "Tag updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request, if something wrong with the request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error400"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized, permission denied",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete tag by id",
+        "description" : "Delete tag by id from database",
+        "tags" : [ "tags" ],
+        "operationId" : "deleteTagById",
+        "parameters" : [ {
+          "name" : "tagId",
+          "in" : "path",
+          "description" : "ID of tag to return",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success delete tag by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/tag"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "status" : "success",
+                      "message" : "Tag deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized, permission denied",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Tag not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Tag not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/edu-levels" : {
+      "get" : {
+        "summary" : "Get all education levels",
+        "description" : "Get all education levels from database",
+        "tags" : [ "edu-levels" ],
+        "operationId" : "getEduLevels",
+        "responses" : {
+          "200" : {
+            "description" : "Success get all education levels",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/eduLevel"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : [ {
+                      "id" : 1,
+                      "name" : "SD"
+                    }, {
+                      "id" : 2,
+                      "name" : "SMP"
+                    }, {
+                      "id" : 3,
+                      "name" : "SMA"
+                    }, {
+                      "id" : 4,
+                      "name" : "S1"
+                    }, {
+                      "id" : 5,
+                      "name" : "S2"
+                    }, {
+                      "id" : 6,
+                      "name" : "S3"
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "if there is no education levels in database",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict, if something wrong with the request, name must be unique",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level already exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/edu-level" : {
+      "post" : {
+        "description" : "Create new education level in database",
+        "summary" : "Create new education level",
+        "tags" : [ "edu-levels" ],
+        "operationId" : "createEduLevel",
+        "requestBody" : {
+          "required" : true,
+          "description" : "Education level object that needs to be added to the database",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/eduLevel"
+              },
+              "examples" : {
+                "success" : {
+                  "value" : {
+                    "name" : "S4"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success create new education level",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "status" : "success",
+                      "message" : "Education level created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request, if something wrong with the request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Bad Request"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized, if user not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict, if something wrong with the request, name must be unique",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level already exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/edu-level/{edu-levelId}" : {
+      "get" : {
+        "description" : "Get education level by id",
+        "summary" : "Get education level by id",
+        "tags" : [ "edu-levels" ],
+        "operationId" : "getEduLevelById",
+        "parameters" : [ {
+          "name" : "edu-levelId",
+          "in" : "path",
+          "description" : "ID of education level that needs to be fetched",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success get education level by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/eduLevel"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "id" : 1,
+                      "name" : "SD"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "if there is no education level with that id in database",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "description" : "Update education level by id",
+        "summary" : "Update education level by id",
+        "tags" : [ "edu-levels" ],
+        "operationId" : "updateEduLevelById",
+        "parameters" : [ {
+          "name" : "edu-levelId",
+          "in" : "path",
+          "description" : "ID of education level that needs to be updated",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "description" : "Education level object that needs to be updated",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/eduLevel"
+              },
+              "examples" : {
+                "success" : {
+                  "value" : {
+                    "name" : "S4"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success update education level by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "status" : "success",
+                      "message" : "Education level updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request, if something wrong with the request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Bad Request"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized, if user not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "if there is no education level with that id in database",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict, if something wrong with the request, name must be unique",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level already exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "description" : "Delete education level by id",
+        "summary" : "Delete education level by id",
+        "tags" : [ "edu-levels" ],
+        "operationId" : "deleteEduLevelById",
+        "parameters" : [ {
+          "name" : "edu-levelId",
+          "in" : "path",
+          "description" : "ID of education level that needs to be deleted",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success delete education level by id",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "status" : "success",
+                      "message" : "Education level deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized, if you are not logged in",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "if there is no education level with that id in database",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "value" : {
+                      "status" : "error",
+                      "message" : "Education level not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/responseMsg"
+                },
+                "examples" : {
+                  "error" : {
+                    "$ref" : "#/components/examples/error500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/register" : {
+      "post" : {
+        "tags" : [ "users" ],
+        "summary" : "User Register",
+        "description" : "Register to the application with username and password",
+        "operationId" : "register",
+        "requestBody" : {
+          "required" : true,
+          "description" : "User object that needs to register",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "username" : {
+                    "type" : "string"
+                  },
+                  "email" : {
+                    "type" : "string"
+                  },
+                  "password" : {
+                    "type" : "string"
+                  }
+                },
+                "required" : [ "username", "email", "password" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Register successful.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Success register"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "success create user",
+                  "data" : null
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed register"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "email already registered",
+                  "data" : null
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed register"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "registration failed",
+                  "data" : null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login" : {
+      "post" : {
+        "tags" : [ "users" ],
+        "summary" : "User Login",
+        "description" : "Login to the application with username and password",
+        "operationId" : "login",
+        "requestBody" : {
+          "required" : true,
+          "description" : "User object that needs to check login",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "description" : "Email access to application"
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "description" : "Password access to application"
+                  }
+                },
+                "required" : [ "email", "password" ]
+              },
+              "example" : {
+                "email" : "user@gmail.com",
+                "password" : "user432"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Login successful. Returns an access token.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Success login"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "success login",
+                  "data" : {
+                    "token" : "access token"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized or User with the provided email does not exist.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed login"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "email or password wrong",
+                  "data" : null
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed login"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "failed login",
+                  "data" : null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testimonials" : {
+      "get" : {
+        "tags" : [ "testimonials" ],
+        "summary" : "Get all testimonials",
+        "description" : "Get all testimonials from database",
+        "operationId" : "getTestimonials",
+        "responses" : {
+          "200" : {
+            "description" : "Success get all testimonials",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed login"
+                    },
+                    "data" : {
+                      "$ref" : "#/components/schemas/testimonial"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "success get testimonials",
+                  "data" : [ {
+                    "id" : 1,
+                    "user_id" : 1,
+                    "message" : "Testimonial 1",
+                    "stars" : 5,
+                    "user_full_name" : "user 1"
+                  }, {
+                    "id" : 2,
+                    "user_id" : 2,
+                    "message" : "Testimonial 2",
+                    "stars" : 4,
+                    "user_full_name" : "user 2"
+                  } ]
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed get testimonials"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "failed get testimonials",
+                  "data" : null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/testimonials" : {
+      "post" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "tags" : [ "testimonials" ],
+        "summary" : "Submit a testimonial",
+        "description" : "Use this endpoint to submit a testimonial.",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "message" : {
+                    "type" : "string"
+                  },
+                  "stars" : {
+                    "type" : "integer"
+                  }
+                },
+                "required" : [ "message", "stars" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Testimonial submitted successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Success add testimonial"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "success add testimony",
+                  "data" : null
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request. Invalid input data.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed add testimonial"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "invalid input data",
+                  "data" : null
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized. Invalid token.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Unauthorized"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "invalid or expired token",
+                  "data" : null
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string",
+                      "description" : "Failed add testimonial"
+                    },
+                    "data" : {
+                      "type" : "object",
+                      "description" : "data"
+                    }
+                  }
+                },
+                "example" : {
+                  "message" : "failed add testimony",
+                  "data" : null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    },
+    "parameters" : {
+      "competitionId" : {
+        "name" : "competitionId",
+        "in" : "path",
+        "description" : "Competition ID",
+        "required" : true,
+        "schema" : {
+          "type" : "number",
+          "format" : "int64",
+          "minLength" : 1,
+          "maxLength" : 100
+        },
+        "examples" : {
+          "competitionId" : {
+            "description" : "Example competition ID",
+            "value" : 1
+          },
+          "competitionId2" : {
+            "description" : "Example competition ID",
+            "value" : 2
+          }
+        }
+      }
+    },
+    "schemas" : {
+      "eduLevel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The ID of the education level."
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of the education level."
+          }
+        }
+      },
+      "tag" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The ID of the tag."
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of the tag."
+          }
+        }
+      },
+      "testimonial" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The ID of the testimonial."
+          },
+          "user_id" : {
+            "type" : "integer",
+            "description" : "The ID of the user who submitted the testimonial."
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "The testimonial message."
+          },
+          "stars" : {
+            "type" : "integer",
+            "description" : "The number of stars given to the testimonial."
+          },
+          "user_full_name" : {
+            "type" : "string",
+            "description" : "The user full name."
+          }
+        }
+      },
+      "education_level-params" : {
+        "type" : "string"
+      },
+      "competition" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "format" : "int64",
+            "description" : "Competition ID"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Competition name"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Competition description"
+          },
+          "image" : {
+            "type" : "string",
+            "description" : "Competition image URL"
+          },
+          "tags" : {
+            "type" : "array",
+            "items" : {
+              "type" : "number",
+              "format" : "uint"
+            },
+            "description" : "Competition tags id"
+          },
+          "education_level_id" : {
+            "type" : "array",
+            "items" : {
+              "type" : "number",
+              "format" : "uint"
+            },
+            "description" : "Education level ID"
+          },
+          "user_id" : {
+            "type" : "number",
+            "format" : "uint",
+            "description" : "User ID"
+          },
+          "end_registration_date" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "Competition start date"
+          },
+          "competition_url" : {
+            "type" : "string",
+            "description" : "Competition URL"
+          }
+        }
+      },
+      "education_level" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "format" : "int64",
+            "description" : "Education level ID"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Education level name"
+          }
+        }
+      },
+      "responseMsg" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "description" : "status code, sucess or error"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "response message"
+          }
+        }
+      }
+    },
+    "examples" : {
+      "error400" : {
+        "summary" : "error bad request",
+        "value" : {
+          "status" : "error",
+          "message" : "Bad request"
+        }
+      },
+      "error401" : {
+        "summary" : "error unauthorized",
+        "value" : {
+          "status" : "error",
+          "message" : "Unauthorized"
+        }
+      },
+      "error404" : {
+        "summary" : "error not found",
+        "value" : {
+          "status" : "error",
+          "message" : "Not found"
+        }
+      },
+      "error500" : {
+        "summary" : "error internal server error",
+        "description" : "the {{error}} is a placeholder for the error message",
+        "value" : {
+          "status" : "error",
+          "message" : "Internal Server Error, {{error}}"
+        }
+      },
+      "competition1" : {
+        "summary" : "Example competition 1 response",
+        "value" : {
+          "name" : "Competition 1",
+          "description" : "Competition 1 description",
+          "image" : "https://golomba.io/images/competition1.jpg",
+          "tags" : [ {
+            "id" : 1
+          }, {
+            "id" : 2
+          } ],
+          "education_level_id" : [ {
+            "id" : 3
+          }, {
+            "id" : 2
+          } ],
+          "user_id" : 1,
+          "end_registration_date" : "2021-01-31",
+          "competition_url" : "https://golomba.io/competition1"
+        }
+      },
+      "competition2" : {
+        "summary" : "Example competition 2 response",
+        "value" : {
+          "name" : "Competition 2",
+          "description" : "Competition 2 description",
+          "image" : "https://golomba.io/images/competition2.jpg",
+          "tags" : [ {
+            "id" : 2
+          }, {
+            "id" : 4
+          } ],
+          "education_level_id" : [ {
+            "id" : 1
+          }, {
+            "id" : 2
+          } ],
+          "user_id" : 1,
+          "end_registration_date" : "2021-02-28",
+          "competition_url" : "https://golomba.io/competition2"
+        }
+      }
+    }
+  }
 }
