@@ -49,3 +49,15 @@ func FindTagsByIds(inputTags []models.TagInput) ([]models.Tag, int, utils.Server
 
 	return tags, 0, utils.ServerResponse{}
 }
+
+func CompeFindTagsByNames(Competition models.Competition) ([]models.TagResponse, error) {
+	var tags []models.Tag
+	var tagsResponse []models.TagResponse
+
+	err := database.DB.Db.Select("tags.name").Joins("JOIN competition_tags ON competition_tags.tag_id = tags.id").Where("competition_tags.competition_id = ?", Competition.ID).Find(&tags).Scan(&tagsResponse).Error
+	if err != nil {
+		return []models.TagResponse{}, err
+	}
+
+	return tagsResponse, nil
+}

@@ -48,3 +48,14 @@ func FindEducationLevelsByIds(inputEducationLevels []models.EducationLevelInput)
 
 	return educationLevels, 0, utils.ServerResponse{}
 }
+
+func CompeFindEducationLevelsByNames(Competition models.Competition) ([]models.EducationLevelResponse, error) {
+	var educationLevels []models.EducationLevel
+	var educationLevelsResponse []models.EducationLevelResponse
+
+	err := database.DB.Db.Select("education_levels.name").Joins("JOIN competition_education_levels ON competition_education_levels.education_level_id = education_levels.id").Where("competition_education_levels.competition_id = ?", Competition.ID).Find(&educationLevels).Scan(&educationLevelsResponse).Error
+	if err != nil {
+		return []models.EducationLevelResponse{}, err
+	}
+	return educationLevelsResponse, nil
+}

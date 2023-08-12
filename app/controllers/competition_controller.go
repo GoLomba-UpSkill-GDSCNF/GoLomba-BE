@@ -87,21 +87,14 @@ func GetCompetitions(c *fiber.Ctx) error {
 	var competitionResponses []models.CompetitionResponse
 	for _, competition := range competitions {
 
-		// get tags name
-		var tagsName []models.Tag
-		var tagsResponse []models.TagResponse
-		err = db.Select("tags.name").Joins("JOIN competition_tags ON competition_tags.tag_id = tags.id").
-			Where("competition_tags.competition_id = ?", competition.ID).Find(&tagsName).Scan(&tagsResponse).Error
+		// check competition_tags db and find tag name by id
+		tagsResponse, err := queries.CompeFindTagsByNames(competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}
 
-		// get education levels name
-		var eduLevelsName []models.EducationLevel
-		var eduLevelsResponse []models.EducationLevelResponse
-		err = db.Select("education_levels.name").Joins("JOIN competition_education_levels ON competition_education_levels.education_level_id = education_levels.id").
-			Where("competition_education_levels.competition_id = ?", competition.ID).
-			Find(&eduLevelsName).Scan(&eduLevelsResponse).Error
+		// check competition_education_levels db and find education_level name by id
+		eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}
