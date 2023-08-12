@@ -207,7 +207,7 @@ func UpdateCompetition(c *fiber.Ctx) error {
 	}
 
 	// check/find if user exists
-	userId, exists, err := queries.GetUserById(input.UserID)
+	userId, exists, err = queries.GetUserById(input.UserID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ErrInvalidParam("user_id"))
 	}
@@ -222,7 +222,6 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		Image:               input.Image,
 		Tags:                tags,            // uint id
 		EducationLevel:      educationLevels, // uint id
-		UserID:              userId,          // uint id
 		UserID:              userId,          // uint id
 		EndRegistrationDate: endRegistrationDate,
 		CompetitionURL:      input.CompetitionURL,
