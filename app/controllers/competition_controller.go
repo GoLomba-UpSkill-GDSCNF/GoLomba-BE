@@ -62,9 +62,11 @@ func CreateCompetition(c *fiber.Ctx) error {
 
 	res := database.DB.Db.Create(&competition).Error
 
-	if res != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
-	}
+	// if res != nil {
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	// }
+
+	_ = competition
 
 	return c.Status(fiber.StatusCreated).JSON(utils.SuccessCreated())
 }
@@ -76,6 +78,9 @@ func GetCompetitions(c *fiber.Ctx) error {
 	db := database.DB.Db
 
 	if err := db.Find(&competitions).Error; err != nil {
+	db := database.DB.Db
+
+	if err := db.Find(&competitions).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
@@ -84,6 +89,49 @@ func GetCompetitions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(utils.NotFound("Competitions"))
 	}
 
+	var competitionResponses []models.CompetitionResponse
+	for _, competition := range competitions {
+
+		// get tags name
+		var tagsName []models.Tag
+		var tagsResponse []models.TagResponse
+		err = db.Select("tags.name").Joins("JOIN competition_tags ON competition_tags.tag_id = tags.id").
+			Where("competition_tags.competition_id = ?", competition.ID).Find(&tagsName).Scan(&tagsResponse).Error
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+		}
+
+		// get education levels name
+		var eduLevelsName []models.EducationLevel
+		var eduLevelsResponse []models.EducationLevelResponse
+		err = db.Select("education_levels.name").Joins("JOIN competition_education_levels ON competition_education_levels.education_level_id = education_levels.id").
+			Where("competition_education_levels.competition_id = ?", competition.ID).
+			Find(&eduLevelsName).Scan(&eduLevelsResponse).Error
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+		}
+
+		// convert userId to string
+		userId := strconv.FormatUint(uint64(competition.UserID), 10)
+
+		// create competition response
+		competitionResponse := models.CompetitionResponse{
+			ID:                  competition.ID,
+			Name:                competition.Name,
+			Description:         competition.Description,
+			Image:               competition.Image,
+			Tags:                tagsResponse,
+			EducationLevels:     eduLevelsResponse,
+			UserID:              userId,
+			EndRegistrationDate: competition.EndRegistrationDate,
+			CompetitionURL:      competition.CompetitionURL,
+		}
+
+		// add competition response to slice
+		competitionResponses = append(competitionResponses, competitionResponse)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(competitionResponses)
 	var competitionResponses []models.CompetitionResponse
 	for _, competition := range competitions {
 
@@ -206,6 +254,15 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("User"))
 	}
 
+	// check/find if user exists
+	userId, exists, err := queries.GetUserById(input.UserID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ErrInvalidParam("user_id"))
+	}
+	if !exists || userId == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("User"))
+	}
+
 	// assign input to competition struct
 	competition = models.Competition{
 		Name:                input.Name,
@@ -213,6 +270,7 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		Image:               input.Image,
 		Tags:                tags,            // uint id
 		EducationLevel:      educationLevels, // uint id
+		UserID:              userId,          // uint id
 		UserID:              userId,          // uint id
 		EndRegistrationDate: endRegistrationDate,
 		CompetitionURL:      input.CompetitionURL,
