@@ -23,17 +23,20 @@ func FindEducationLevelsByIds(inputEducationLevels []models.EducationLevelInput)
 
 	for _, educationLevelInput := range inputEducationLevels {
 
+		// convert string to uint
+		id, err := strconv.ParseUint(educationLevelInput.ID, 10, 32)
+		if err != nil {
+			return nil, fiber.StatusBadRequest, utils.InvalidData(err)
+		}
+
 		// check if there is id provided
-		if educationLevelInput.ID == 0 {
+		if id == 0 {
 			return nil, fiber.StatusBadRequest, utils.CustomError("education_level_id is required")
 		}
 		var educationLevel models.EducationLevel
 
-		// convert id to string
-		id := strconv.Itoa(int(educationLevelInput.ID))
-
 		// find single educationLevel by id
-		if err := FindEducationLevelByID(id).First(&educationLevel).Error; err != nil {
+		if err := FindEducationLevelByID(educationLevelInput.ID).First(&educationLevel).Error; err != nil {
 			// check if education level not found
 			if gorm.ErrRecordNotFound.Error() == err.Error() {
 				return nil, fiber.StatusNotFound, utils.IDNotFound("Education Level")

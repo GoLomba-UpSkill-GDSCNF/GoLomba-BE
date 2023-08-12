@@ -6,5 +6,9 @@ type Tag struct {
 }
 
 type TagInput struct {
-	ID uint `json:"id" validate:"required"`
+	ID string `json:"tag_id" validate:"required"`
+}
+
+type TagResponse struct {
+	Name string `json:"name"`
 }
