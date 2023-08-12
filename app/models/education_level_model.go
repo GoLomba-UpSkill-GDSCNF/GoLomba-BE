@@ -6,5 +6,9 @@ type EducationLevel struct {
 }
 
 type EducationLevelInput struct {
-	ID uint `json:"id" validate:"required"`
+	ID string `json:"edu-level_id" validate:"required"`
+}
+
+type EducationLevelResponse struct {
+	Name string `json:"name"`
 }

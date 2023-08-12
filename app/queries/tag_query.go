@@ -23,17 +23,20 @@ func FindTagsByIds(inputTags []models.TagInput) ([]models.Tag, int, utils.Server
 
 	for _, tagInput := range inputTags {
 
+		// convert string to uint
+		id, err := strconv.ParseUint(tagInput.ID, 10, 32)
+		if err != nil {
+			return nil, fiber.StatusBadRequest, utils.InvalidData(err)
+		}
+
 		// check if there is id provided
-		if tagInput.ID == 0 {
+		if id == 0 {
 			return nil, fiber.StatusBadRequest, utils.CustomError("tag_id is required")
 		}
 		var tag models.Tag
 
-		// convert id to string
-		id := strconv.Itoa(int(tagInput.ID))
-
 		// find single tag by id
-		if err := FindTagByID(id).First(&tag).Error; err != nil {
+		if err := FindTagByID(tagInput.ID).First(&tag).Error; err != nil {
 
 			// if tag not found
 			if gorm.ErrRecordNotFound == err {
