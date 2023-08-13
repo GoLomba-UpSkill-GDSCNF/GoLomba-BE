@@ -73,9 +73,50 @@ func CreateCompetition(c *fiber.Ctx) error {
 func GetCompetitions(c *fiber.Ctx) error {
 	var competitions []models.Competition
 
-	db := database.DB.Db
+	// get query parameters for pagination and filtering
+	page, err := strconv.Atoi(c.Query("page", "8"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("Invalid page number"))
+	}
+	// pageSize, err := strconv.Atoi(c.Query("page_size", "10"))
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("Invalid page size"))
+	// }
+	// tags := c.Query("tags")
+	// search := c.Query("search")
+	// eduLevels := c.Query("edu_levels")
 
-	if err := db.Find(&competitions).Error; err != nil {
+	// page size must not be greater than 20
+	// if pageSize > 20 {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("Page size must not be greater than 20"))
+	// }
+	pageSize := 8
+
+	// calculate offset and limit for pagination
+	offset := (page - 1) * pageSize
+	limit := pageSize
+
+	// get all competitions with pagination and filtering
+	db := database.DB.Db
+	// if tags != "" {
+	// 	db = db.Joins("JOIN competition_tags ON competition_tags.competition_id = competitions.id").
+	// 		Joins("JOIN tags ON tags.id = competition_tags.tag_id").
+	// 		Where("tags.name IN (?)", strings.Split(tags, ","))
+	// }
+	// if search != "" {
+	// 	db = db.Where("competitions.name LIKE ?", "%"+search+"%")
+	// }
+	// if eduLevels != "" {
+	// 	db = db.Joins("JOIN education_levels ON education_levels.id = competitions.education_level_id").
+	// 		Where("education_levels.name IN (?)", strings.Split(eduLevels, ","))
+	// }
+
+	if err = db.Offset(offset).Limit(limit).Find(&competitions).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	}
+
+	var total int64
+	if err := db.Model(&models.Competition{}).Count(&total).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
@@ -119,7 +160,15 @@ func GetCompetitions(c *fiber.Ctx) error {
 		competitionResponses = append(competitionResponses, competitionResponse)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(competitionResponses)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": competitionResponses,
+		"meta": fiber.Map{
+			"total_data": total,
+			"page_data":  len(competitions),
+			"page":       page,
+			"last_page":  total/int64(limit) + 1,
+		},
+	})
 }
 
 // Get competition by id handler

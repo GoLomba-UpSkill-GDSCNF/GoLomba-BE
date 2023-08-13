@@ -2,7 +2,7 @@
   "openapi" : "3.0.3",
   "info" : {
     "title" : "GoLomba RESTful API",
-    "version" : "1.6",
+    "version" : "1.7",
     "description" : "API contract for GoLomba RESTful API",
     "license" : {
       "name" : "Apache 2.0",
@@ -70,51 +70,102 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/competition"
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/competition"
+                      }
+                    },
+                    "meta" : {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "page_data": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "total_data": {
+                          "type": "integer",
+                          "example": 100
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "example": 10
+                        }
+                      }
+                    }
                   }
+                  
                 },
                 "examples" : {
                   "success" : {
                     "description" : "Example success response get all Competitions",
-                    "value" : [ {
-                      "id" : 1,
-                      "name" : "Competition 1",
-                      "description" : "Competition 1 description",
-                      "image" : "https://golomba.io/images/competition1.jpg",
-                      "tags" : [ {
-                        "id" : 1
-                      }, {
-                        "id" : 2
-                      } ],
-                      "education_level_id" : [ {
-                        "id" : 3
-                      }, {
-                        "id" : 2
-                      } ],
-                      "user_id" : 1,
-                      "end_registration_date" : "2021-01-31",
-                      "competition_url" : "https://golomba.io/competition1"
-                    }, {
-                      "id" : 2,
-                      "name" : "Competition 2",
-                      "description" : "Competition 2 description",
-                      "image" : "https://golomba.io/images/competition2.jpg",
-                      "tags" : [ {
-                        "id" : 2
-                      }, {
-                        "id" : 4
-                      } ],
-                      "education_level_id" : [ {
-                        "id" : 1
-                      }, {
-                        "id" : 2
-                      } ],
-                      "user_id" : 1,
-                      "end_registration_date" : "2021-02-28",
-                      "competition_url" : "https://golomba.io/competition2"
-                    } ]
+                    "summary": "success query page 4",
+                    "value" : {
+                      "data": [
+                          {
+                              "id": 25,
+                              "name": "competition13",
+                              "description": "description example13",
+                              "image": "image13",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.432+07:00",
+                              "competition_url": "competition_url13"
+                          },
+                          {
+                              "id": 26,
+                              "name": "competition14",
+                              "description": "description example14",
+                              "image": "image14",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.434+07:00",
+                              "competition_url": "competition_url14"
+                          }
+                      ],
+                      "meta": {
+                          "last_page": 4,
+                          "page": 4,
+                          "page_data": 2,
+                          "total_data": 26
+                      }
+                  }
                   }
                 }
               }
@@ -1992,7 +2043,7 @@
             "type" : "array",
             "items" : {
               "type" : "number",
-              "format" : "uint"
+              "format" : "string"
             },
             "description" : "Competition tags id"
           },
@@ -2000,13 +2051,13 @@
             "type" : "array",
             "items" : {
               "type" : "number",
-              "format" : "uint"
+              "format" : "string"
             },
             "description" : "Education level ID"
           },
           "user_id" : {
             "type" : "number",
-            "format" : "uint",
+            "format" : "string",
             "description" : "User ID"
           },
           "end_registration_date" : {
@@ -2085,16 +2136,16 @@
           "description" : "Competition 1 description",
           "image" : "https://golomba.io/images/competition1.jpg",
           "tags" : [ {
-            "id" : 1
+            "tag_id" : "1"
           }, {
-            "id" : 2
+            "tag_id" : "2"
           } ],
           "education_level_id" : [ {
-            "id" : 3
+            "edu-level_id" : "3"
           }, {
-            "id" : 2
+            "edu-level_id" : "2"
           } ],
-          "user_id" : 1,
+          "user_id" : "1",
           "end_registration_date" : "2021-01-31",
           "competition_url" : "https://golomba.io/competition1"
         }
@@ -2106,16 +2157,16 @@
           "description" : "Competition 2 description",
           "image" : "https://golomba.io/images/competition2.jpg",
           "tags" : [ {
-            "id" : 2
+            "tag_id" : "2"
           }, {
-            "id" : 4
+            "tag_id" :"4"
           } ],
           "education_level_id" : [ {
-            "id" : 1
+            "edu-level_id" : "1"
           }, {
-            "id" : 2
+            "edu-level_id" : "2"
           } ],
-          "user_id" : 1,
+          "user_id" : "2",
           "end_registration_date" : "2021-02-28",
           "competition_url" : "https://golomba.io/competition2"
         }
