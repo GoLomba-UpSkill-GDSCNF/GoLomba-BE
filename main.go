@@ -13,6 +13,8 @@ func main() {
 
 	app := fiber.New()
 
+	routes.SetupSeedersRoutes(app)
+	routes.SetupAuthRoutes(app)
 	routes.SetupTagRoutes(app)
 	routes.SetupEducationLevelRoutes(app)
 	routes.SetupCompetitionRoutes(app)

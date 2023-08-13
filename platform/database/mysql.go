@@ -34,7 +34,7 @@ func Connect() {
 
 	// Add migrations
 	log.Println("Running migrations...")
-	dbConnection.AutoMigrate(&models.User{}, &models.Role{}, &models.Tag{}, &models.Competition{}, &models.EducationLevel{}, &models.Testimonial{})
+	dbConnection.AutoMigrate(&models.User{}, &models.Role{}, &models.Tag{}, &models.Competition{}, &models.EducationLevel{}, &models.Testimonial{}, &models.User{}, &models.Testimonial{})
 
 	DB = Instance{Db: dbConnection}
 }
