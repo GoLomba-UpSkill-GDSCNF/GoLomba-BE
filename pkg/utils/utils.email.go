@@ -7,8 +7,8 @@ import (
 
 func EmailChecker(email string) bool {
 	var user models.User
-	database.DB.Table("users").Where("email = ?", email).Find(&user)
-	
+	database.DB.Db.Table("users").Where("email = ?", email).Find(&user)
+
 	if user.ID != 0 {
 		return true
 	}
