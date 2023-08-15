@@ -71,71 +71,45 @@ func CreateCompetition(c *fiber.Ctx) error {
 
 // Get all competitions handler
 func GetCompetitions(c *fiber.Ctx) error {
-	var competitions []models.Competition
 
-	// get query parameters for pagination and filtering
-	page, err := strconv.Atoi(c.Query("page", "8"))
+	// convert string to int
+	page, err := strconv.Atoi(c.Query("page", "1"))
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("Invalid page number"))
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrInvalidParam("page"))
 	}
-	// pageSize, err := strconv.Atoi(c.Query("page_size", "10"))
-	// if err != nil {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("Invalid page size"))
-	// }
-	// tags := c.Query("tags")
-	// search := c.Query("search")
-	// eduLevels := c.Query("edu_levels")
+	sort := c.Query("sort", "asc")
 
-	// page size must not be greater than 20
-	// if pageSize > 20 {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(utils.CustomError("Page size must not be greater than 20"))
-	// }
-	pageSize := 8
+	// TODO: add tags and education_levels filter
 
-	// calculate offset and limit for pagination
-	offset := (page - 1) * pageSize
-	limit := pageSize
-
-	// get all competitions with pagination and filtering
-	db := database.DB.Db
-	// if tags != "" {
-	// 	db = db.Joins("JOIN competition_tags ON competition_tags.competition_id = competitions.id").
-	// 		Joins("JOIN tags ON tags.id = competition_tags.tag_id").
-	// 		Where("tags.name IN (?)", strings.Split(tags, ","))
-	// }
-	// if search != "" {
-	// 	db = db.Where("competitions.name LIKE ?", "%"+search+"%")
-	// }
-	// if eduLevels != "" {
-	// 	db = db.Joins("JOIN education_levels ON education_levels.id = competitions.education_level_id").
-	// 		Where("education_levels.name IN (?)", strings.Split(eduLevels, ","))
-	// }
-
-	if err = db.Offset(offset).Limit(limit).Find(&competitions).Error; err != nil {
+	// pagination
+	pagination := &utils.Pagination{
+		Limit: 8, // default limit is 8
+		Page:  page,
+		Sort:  "id " + sort,
+	}
+	cg := &utils.CompetitionGorm{
+		DB: database.DB.Db,
+	}
+	if _, err := cg.ListCompetition(pagination); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	var total int64
-	if err := db.Model(&models.Competition{}).Count(&total).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
-	}
-
-	// check if competitions is empty
-	if len(competitions) == 0 {
+	// check if competitions is empty in db
+	if len(pagination.Rows.([]*models.Competition)) == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(utils.NotFound("Competitions"))
 	}
 
 	var competitionResponses []models.CompetitionResponse
-	for _, competition := range competitions {
+	for _, competition := range pagination.Rows.([]*models.Competition) {
 
 		// check competition_tags db and find tag name by id
-		tagsResponse, err := queries.CompeFindTagsByNames(competition)
+		tagsResponse, err := queries.CompeFindTagsByNames(*competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}
 
 		// check competition_education_levels db and find education_level name by id
-		eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(competition)
+		eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(*competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}
@@ -158,17 +132,11 @@ func GetCompetitions(c *fiber.Ctx) error {
 
 		// add competition response to slice
 		competitionResponses = append(competitionResponses, competitionResponse)
-	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"data": competitionResponses,
-		"meta": fiber.Map{
-			"total_data": total,
-			"page_data":  len(competitions),
-			"page":       page,
-			"last_page":  total/int64(limit) + 1,
-		},
-	})
+	}
+	pagination.Rows = competitionResponses
+
+	return c.Status(fiber.StatusOK).JSON(pagination)
 }
 
 // Get competition by id handler

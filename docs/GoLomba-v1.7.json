@@ -72,31 +72,30 @@
                 "schema" : {
                   "type" : "object",
                   "properties" : {
-                    "data" : {
+                    "limit" : {
+                      "type" : "integer",
+                      "example" : 8
+                    },
+                    "page" : {
+                      "type" : "integer",
+                      "example" : 1
+                    },
+                    "sort" : {
+                      "type" : "string",
+                      "example" : "asc or desc"
+                    },
+                    "total_rows" : {
+                      "type" : "integer",
+                      "example" : 32
+                    },
+                    "total_pages" : {
+                      "type" : "integer",
+                      "example" : 4
+                    },
+                    "rows" : {
                       "type" : "array",
                       "items" : {
                         "$ref" : "#/components/schemas/competition"
-                      }
-                    },
-                    "meta" : {
-                      "type": "object",
-                      "properties": {
-                        "page": {
-                          "type": "integer",
-                          "example": 1
-                        },
-                        "page_data": {
-                          "type": "integer",
-                          "example": 10
-                        },
-                        "total_data": {
-                          "type": "integer",
-                          "example": 100
-                        },
-                        "last_page": {
-                          "type": "integer",
-                          "example": 10
-                        }
                       }
                     }
                   }
@@ -107,12 +106,17 @@
                     "description" : "Example success response get all Competitions",
                     "summary": "success query page 4",
                     "value" : {
-                      "data": [
+                      "limit": 8,
+                      "page": 2,
+                      "sort": "id asc",
+                      "total_rows": 32,
+                      "total_pages": 4,
+                      "rows": [
                           {
-                              "id": 25,
-                              "name": "competition13",
-                              "description": "description example13",
-                              "image": "image13",
+                              "id": 9,
+                              "name": "competition5",
+                              "description": "description example5",
+                              "image": "image5",
                               "tags": [
                                   {
                                       "name": "Data Science"
@@ -130,14 +134,14 @@
                                   }
                               ],
                               "user_id": "4",
-                              "end_registration_date": "2023-08-13T07:52:02.432+07:00",
-                              "competition_url": "competition_url13"
+                              "end_registration_date": "2023-08-13T07:08:38.023+07:00",
+                              "competition_url": "competition_url5"
                           },
                           {
-                              "id": 26,
-                              "name": "competition14",
-                              "description": "description example14",
-                              "image": "image14",
+                              "id": 10,
+                              "name": "competition6",
+                              "description": "description example6",
+                              "image": "image6",
                               "tags": [
                                   {
                                       "name": "Data Science"
@@ -155,17 +159,161 @@
                                   }
                               ],
                               "user_id": "4",
-                              "end_registration_date": "2023-08-13T07:52:02.434+07:00",
-                              "competition_url": "competition_url14"
+                              "end_registration_date": "2023-08-13T07:08:38.027+07:00",
+                              "competition_url": "competition_url6"
+                          },
+                          {
+                              "id": 11,
+                              "name": "competition7",
+                              "description": "description example7",
+                              "image": "image7",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:08:38.029+07:00",
+                              "competition_url": "competition_url7"
+                          },
+                          {
+                              "id": 12,
+                              "name": "competition0",
+                              "description": "description example0",
+                              "image": "image0",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.352+07:00",
+                              "competition_url": "competition_url0"
+                          },
+                          {
+                              "id": 13,
+                              "name": "competition1",
+                              "description": "description example1",
+                              "image": "image1",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.369+07:00",
+                              "competition_url": "competition_url1"
+                          },
+                          {
+                              "id": 14,
+                              "name": "competition2",
+                              "description": "description example2",
+                              "image": "image2",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.375+07:00",
+                              "competition_url": "competition_url2"
+                          },
+                          {
+                              "id": 15,
+                              "name": "competition3",
+                              "description": "description example3",
+                              "image": "image3",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.383+07:00",
+                              "competition_url": "competition_url3"
+                          },
+                          {
+                              "id": 16,
+                              "name": "competition4",
+                              "description": "description example4",
+                              "image": "image4",
+                              "tags": [
+                                  {
+                                      "name": "Data Science"
+                                  },
+                                  {
+                                      "name": "Biology"
+                                  }
+                              ],
+                              "education_levels": [
+                                  {
+                                      "name": "SMK"
+                                  },
+                                  {
+                                      "name": "SMA"
+                                  }
+                              ],
+                              "user_id": "4",
+                              "end_registration_date": "2023-08-13T07:52:02.386+07:00",
+                              "competition_url": "competition_url4"
                           }
-                      ],
-                      "meta": {
-                          "last_page": 4,
-                          "page": 4,
-                          "page_data": 2,
-                          "total_data": 26
-                      }
-                  }
+                      ]
+                    }
                   }
                 }
               }
