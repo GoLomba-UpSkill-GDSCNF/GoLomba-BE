@@ -80,6 +80,9 @@ func GetCompetitions(c *fiber.Ctx) error {
 	sort := c.Query("sort", "asc")
 
 	// TODO: add tags and education_levels filter
+	tags := c.Query("tags", "")
+	search := c.Query("search", "")
+	eduLevels := c.Query("edu_levels", "")
 
 	// pagination
 	pagination := &utils.Pagination{
@@ -90,7 +93,7 @@ func GetCompetitions(c *fiber.Ctx) error {
 	cg := &utils.CompetitionGorm{
 		DB: database.DB.Db,
 	}
-	if _, err := cg.ListCompetition(pagination); err != nil {
+	if _, err := cg.ListCompetition(pagination, tags, search, eduLevels); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
@@ -102,13 +105,13 @@ func GetCompetitions(c *fiber.Ctx) error {
 	var competitionResponses []models.CompetitionResponse
 	for _, competition := range pagination.Rows.([]*models.Competition) {
 
-		// check competition_tags db and find tag name by id
+		// iterate through tags and find tags by id
 		tagsResponse, err := queries.CompeFindTagsByNames(*competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}
 
-		// check competition_education_levels db and find education_level name by id
+		// iterate through education_levels and find education_levels by id
 		eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(*competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
@@ -134,8 +137,8 @@ func GetCompetitions(c *fiber.Ctx) error {
 		competitionResponses = append(competitionResponses, competitionResponse)
 
 	}
+	pagination.TotalData = len(pagination.Rows.([]*models.Competition))
 	pagination.Rows = competitionResponses
-
 	return c.Status(fiber.StatusOK).JSON(pagination)
 }
 

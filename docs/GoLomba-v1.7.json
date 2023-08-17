@@ -34,7 +34,7 @@
         "parameters" : [ {
           "name" : "search",
           "in" : "query",
-          "description" : "Search by name or description",
+          "description" : "Search by name",
           "required" : false,
           "schema" : {
             "type" : "string",
@@ -43,9 +43,9 @@
             "maxLength" : 100
           }
         }, {
-          "name" : "education_level",
+          "name" : "edu_levels",
           "in" : "query",
-          "description" : "Education level",
+          "description" : "Education level competition category separated by comma, e.g. edu_level1,edu_level2",
           "required" : false,
           "schema" : {
             "$ref" : "#/components/schemas/education_level-params",
@@ -88,6 +88,10 @@
                       "type" : "integer",
                       "example" : 32
                     },
+                    "total_data" : {
+                      "type" : "integer",
+                      "example" : 5
+                    },
                     "total_pages" : {
                       "type" : "integer",
                       "example" : 4
@@ -110,6 +114,7 @@
                       "page": 2,
                       "sort": "id asc",
                       "total_rows": 32,
+                      "total_data": 8,
                       "total_pages": 4,
                       "rows": [
                           {
