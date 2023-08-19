@@ -49,6 +49,7 @@ func FindEducationLevelsByIds(inputEducationLevels []models.EducationLevelInput)
 	return educationLevels, 0, utils.ServerResponse{}
 }
 
+// find all educationLevels by competition_id in competition_educationLevels table, return educationLevels name
 func CompeFindEducationLevelsByNames(Competition models.Competition) ([]models.EducationLevelResponse, error) {
 	var educationLevels []models.EducationLevel
 	var educationLevelsResponse []models.EducationLevelResponse
@@ -58,4 +59,43 @@ func CompeFindEducationLevelsByNames(Competition models.Competition) ([]models.E
 		return []models.EducationLevelResponse{}, err
 	}
 	return educationLevelsResponse, nil
+}
+
+// find all educationLevels by competition_id in competition_educationLevels table amd delete them
+func FindCompeDeleteEduLevelsByCompetitionID(id string) error {
+
+	// check if competition_id is valid
+	if _, err := strconv.ParseUint(id, 10, 32); err != nil {
+		return err
+	}
+
+	// check if competition_id exist in competition_education_levels table
+	if err := database.DB.Db.Table("competition_education_levels").Where("competition_id = ?", id).Error; err != nil {
+		return err
+	}
+
+	// delete all rows with competition_education_levels table by competition_id
+	if err := database.DB.Db.Table("competition_education_levels").Where("competition_id = ?", id).Delete(&models.EducationLevel{}).Error; err != nil {
+		return err
+	}
+	return nil
+
+}
+
+// Update education levels from competition_education_levels table, by first delete all existing education levels associated with the competition, then add new education levels to the competition_education_levels table
+func UpdateCompeEduLevelsById(id string, eduLevels []models.EducationLevel) error {
+	// delete all existing education levels associated with the competition
+	if err := FindCompeDeleteEduLevelsByCompetitionID(id); err != nil {
+		return err
+	}
+
+	// add new education levels to the competition
+	competition := &models.Competition{}
+	if err := database.DB.Db.First(&competition, id).Error; err != nil {
+		return err
+	}
+	if err := database.DB.Db.Model(&competition).Association("EducationLevels").Append(eduLevels); err != nil {
+		return err
+	}
+	return nil
 }

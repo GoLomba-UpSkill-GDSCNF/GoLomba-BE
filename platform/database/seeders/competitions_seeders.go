@@ -33,7 +33,7 @@ func SeedCompetitions(c *fiber.Ctx) error {
 			Description:         "description example" + strconv.Itoa(i),
 			Image:               "image" + strconv.Itoa(i),
 			Tags:                tags,
-			EducationLevel:      educationLevels,
+			EducationLevels:     educationLevels,
 			CompetitionURL:      "competition_url" + strconv.Itoa(i),
 			EndRegistrationDate: time.Now(),
 			UserID:              4,

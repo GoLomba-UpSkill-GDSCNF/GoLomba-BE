@@ -50,6 +50,7 @@ func FindTagsByIds(inputTags []models.TagInput) ([]models.Tag, int, utils.Server
 	return tags, 0, utils.ServerResponse{}
 }
 
+// find all tags by competition_id in competition_tags table, return tags name
 func CompeFindTagsByNames(Competition models.Competition) ([]models.TagResponse, error) {
 	var tags []models.Tag
 	var tagsResponse []models.TagResponse
@@ -60,4 +61,43 @@ func CompeFindTagsByNames(Competition models.Competition) ([]models.TagResponse,
 	}
 
 	return tagsResponse, nil
+}
+
+// find all competition_tags by competition_id in competition_tags table and delete all of them
+func FindCompeDeleteTagsById(id string) error {
+
+	// check if competition_id is valid
+	if _, err := strconv.ParseUint(id, 10, 32); err != nil {
+		return err
+	}
+
+	// check if competition_id is exist in competition_tags table
+	if err := database.DB.Db.Table("competition_tags").Where("competition_id = ?", id).Error; err != nil {
+		return err
+	}
+
+	// delete all rows in competition_tags table by competition_id
+	if err := database.DB.Db.Table("competition_tags").Where("competition_id = ?", id).Delete(&models.Tag{}).Error; err != nil {
+		return err
+	}
+	return nil
+
+}
+
+// Update tags from competition_tags table, by first delete all existing tags associated with the competition, then add new tags to the competition_tags table
+func UpdateCompeTagsById(id string, tags []models.Tag) error {
+	// delete all existing tags associated with the competition
+	if err := FindCompeDeleteTagsById(id); err != nil {
+		return err
+	}
+
+	// add new tags to the competition
+	competition := &models.Competition{}
+	if err := database.DB.Db.First(&competition, id).Error; err != nil {
+		return err
+	}
+	if err := database.DB.Db.Model(&competition).Association("Tags").Append(tags); err != nil {
+		return err
+	}
+	return nil
 }

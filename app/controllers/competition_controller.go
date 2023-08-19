@@ -54,7 +54,7 @@ func CreateCompetition(c *fiber.Ctx) error {
 		Description:         input.Description,
 		Image:               input.Image,
 		Tags:                tags,
-		EducationLevel:      educationLevels,
+		EducationLevels:     educationLevels,
 		UserID:              userId,
 		EndRegistrationDate: endRegistrationDate,
 		CompetitionURL:      input.CompetitionURL,
@@ -79,7 +79,6 @@ func GetCompetitions(c *fiber.Ctx) error {
 	}
 	sort := c.Query("sort", "asc")
 
-	// TODO: add tags and education_levels filter
 	tags := c.Query("tags", "")
 	search := c.Query("search", "")
 	eduLevels := c.Query("edu_levels", "")
@@ -164,7 +163,36 @@ func GetCompetition(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(competition)
+	// iterate through tags and find tags by names in competition_tags table
+	tagsResponse, err := queries.CompeFindTagsByNames(competition)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	}
+
+	// iterate through education_levels and find education_levels by names in competition_education_levels table
+	eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(competition)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	}
+
+	// convert userId to string
+	userId := strconv.FormatUint(uint64(competition.UserID), 10)
+
+	// create competition response
+	competitionResponse := models.CompetitionResponse{
+		ID:                  competition.ID,
+		Name:                competition.Name,
+		Description:         competition.Description,
+		Image:               competition.Image,
+		Tags:                tagsResponse,
+		EducationLevels:     eduLevelsResponse,
+		UserID:              userId,
+		EndRegistrationDate: competition.EndRegistrationDate,
+		CompetitionURL:      competition.CompetitionURL,
+	}
+
+	// return competition response
+	return c.Status(fiber.StatusOK).JSON(competitionResponse)
 }
 
 // Update competition by id handler
@@ -191,6 +219,16 @@ func UpdateCompetition(c *fiber.Ctx) error {
 	// parse body to competition
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.ErrParseJson())
+	}
+
+	// find tags in competition_tags table by competition_id and delete all of them
+	if err := queries.FindCompeDeleteTagsById(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	}
+
+	// find competition_education_levels in competition_education_levels table by competition_id and delete all of them
+	if err := queries.FindCompeDeleteEduLevelsByCompetitionID(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
 	// get end_registration_date from form
@@ -230,18 +268,43 @@ func UpdateCompetition(c *fiber.Ctx) error {
 
 	// assign input to competition struct
 	competition = models.Competition{
-		Name:                input.Name,
-		Description:         input.Description,
-		Image:               input.Image,
-		Tags:                tags,            // uint id
-		EducationLevel:      educationLevels, // uint id
-		UserID:              userId,          // uint id
+		Name:        input.Name,
+		Description: input.Description,
+		Image:       input.Image,
+		// Tags:                tags,            // uint id
+		// EducationLevel:      educationLevels, // uint id
+		UserID:              userId, // uint id
 		EndRegistrationDate: endRegistrationDate,
 		CompetitionURL:      input.CompetitionURL,
 	}
 
-	// update competition in db
-	if err := database.DB.Db.Model(&competition).Updates(competition).Error; err != nil {
+	if err := queries.UpdateCompeTagsById(id, tags); err != nil {
+
+		// if error is not found
+		if gorm.ErrRecordNotFound.Error() != err.Error() {
+			return c.Status(fiber.StatusInternalServerError).JSON(utils.NotFound("Tags"))
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	}
+
+	if err := queries.UpdateCompeEduLevelsById(id, educationLevels); err != nil {
+
+		// if error is not found
+		if gorm.ErrRecordNotFound.Error() != err.Error() {
+			return c.Status(fiber.StatusInternalServerError).JSON(utils.NotFound("Education Levels"))
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+	}
+
+	// update competition
+	if err := database.DB.Db.Model(&competition).Where("id = ?", id).Updates(map[string]interface{}{
+		"name":                  competition.Name,
+		"description":           competition.Description,
+		"image":                 competition.Image,
+		"user_id":               competition.UserID,
+		"end_registration_date": competition.EndRegistrationDate,
+		"competition_url":       competition.CompetitionURL,
+	}).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
