@@ -376,10 +376,10 @@
               },
               "examples" : {
                 "competition 1" : {
-                  "$ref" : "#/components/examples/competition1"
+                  "$ref" : "#/components/examples/competition3"
                 },
                 "competition 2" : {
-                  "$ref" : "#/components/examples/competition2"
+                  "$ref" : "#/components/examples/competition4"
                 }
               }
             }
@@ -532,10 +532,10 @@
               },
               "examples" : {
                 "competition 1" : {
-                  "$ref" : "#/components/examples/competition1"
+                  "$ref" : "#/components/examples/competition3"
                 },
                 "competition 2" : {
-                  "$ref" : "#/components/examples/competition2"
+                  "$ref" : "#/components/examples/competition4"
                 }
               }
             }
@@ -771,6 +771,9 @@
     },
     "/tag" : {
       "post" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
         "summary" : "Create new tag",
         "description" : "Create new tag in database",
         "tags" : [ "tags" ],
@@ -884,6 +887,7 @@
     },
     "/tag/{tagId}" : {
       "get" : {
+
         "summary" : "Get tag by id",
         "description" : "Get tag by id from database",
         "tags" : [ "tags" ],
@@ -968,6 +972,9 @@
         }
       },
       "put" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
         "summary" : "Update tag by id",
         "description" : "Update tag by id in database",
         "tags" : [ "tags" ],
@@ -1075,6 +1082,9 @@
         }
       },
       "delete" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
         "summary" : "Delete tag by id",
         "description" : "Delete tag by id from database",
         "tags" : [ "tags" ],
@@ -1164,6 +1174,7 @@
     },
     "/edu-levels" : {
       "get" : {
+
         "summary" : "Get all education levels",
         "description" : "Get all education levels from database",
         "tags" : [ "edu-levels" ],
@@ -1258,6 +1269,9 @@
     },
     "/edu-level" : {
       "post" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
         "description" : "Create new education level in database",
         "summary" : "Create new education level",
         "tags" : [ "edu-levels" ],
@@ -1442,6 +1456,9 @@
         }
       },
       "put" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
         "description" : "Update education level by id",
         "summary" : "Update education level by id",
         "tags" : [ "edu-levels" ],
@@ -1583,6 +1600,9 @@
         }
       },
       "delete" : {
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
         "description" : "Delete education level by id",
         "summary" : "Delete education level by id",
         "tags" : [ "edu-levels" ],
@@ -1954,7 +1974,7 @@
         }
       }
     },
-    "/user/testimonials" : {
+    "/testimonial" : {
       "post" : {
         "security" : [ {
           "bearerAuth" : [ ]
@@ -2208,11 +2228,6 @@
             },
             "description" : "Education level ID"
           },
-          "user_id" : {
-            "type" : "number",
-            "format" : "string",
-            "description" : "User ID"
-          },
           "end_registration_date" : {
             "type" : "string",
             "format" : "date-time",
@@ -2322,6 +2337,46 @@
           "user_id" : "2",
           "end_registration_date" : "2021-02-28",
           "competition_url" : "https://golomba.io/competition2"
+        }
+      },
+      "competition3":{
+        "summary" : "Example competition 3 response",
+        "value" : {
+          "name" : "Competition 3",
+          "description" : "Competition 3 description",
+          "image" : "https://golomba.io/images/competition3.jpg",
+          "tags" : [ {
+            "tag_id" : "1"
+          }, {
+            "tag_id" : "3"
+          } ],
+          "education_level_id" : [ {
+            "edu-level_id" : "1"
+          }, {
+            "edu-level_id" : "3"
+          } ],
+          "end_registration_date" : "2021-03-31",
+          "competition_url" : "https://golomba.io/competition3"
+        }
+      },
+      "competition4":{
+        "summary" : "Example competition 4 response",
+        "value" : {
+          "name" : "Competition 4",
+          "description" : "Competition 4 description",
+          "image" : "https://golomba.io/images/competition4.jpg",
+          "tags" : [ {
+            "tag_id" : "1"
+          }, {
+            "tag_id" : "2"
+          } ],
+          "education_level_id" : [ {
+            "edu-level_id" : "1"
+          }, {
+            "edu-level_id" : "2"
+          } ],
+          "end_registration_date" : "2021-04-30",
+          "competition_url" : "https://golomba.io/competition4"
         }
       }
     }

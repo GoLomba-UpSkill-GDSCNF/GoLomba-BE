@@ -37,9 +37,6 @@ type CompetitionInput struct {
 	Tags            []TagInput            `json:"tags" gorm:"many2many:competition_tags;" validate:"required,min=1,max=255"`
 	EducationLevels []EducationLevelInput `json:"education_levels" gorm:"many2many:competition_education_levels;" validate:"required,min=1,max=255"`
 
-	// Foreign Keys
-	UserID string `json:"user_id" gorm:"not null" validate:"required"`
-
 	EndRegistrationDate string `json:"end_registration_date" validate:"required,min=3,max=255"`
 	CompetitionURL      string `json:"competition_url" gorm:"type:varchar(255)" validate:"required,min=3,max=255"`
 }

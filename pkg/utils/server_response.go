@@ -83,6 +83,13 @@ func InvalidData(err error) ServerResponse {
 	}
 }
 
+func Unauthorized() ServerResponse {
+	return ServerResponse{
+		Status:  "error",
+		Message: "Unauthorized",
+	}
+}
+
 func CustomError(message string) ServerResponse {
 	return ServerResponse{
 		Status:  "error",

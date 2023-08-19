@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/models"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/queries"
+	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/middleware"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/utils"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database"
 	"gorm.io/gorm"
@@ -16,8 +18,18 @@ import (
 func CreateCompetition(c *fiber.Ctx) error {
 	var input models.CompetitionInput
 
-	if err := c.BodyParser(&input); err != nil {
+	tokenJWT := ""
 
+	if authHeader := c.Request().Header.Peek("Authorization"); len(authHeader) > 0 {
+		tokenJWT = strings.Fields(string(authHeader))[1]
+	}
+
+	userID, _, err := middleware.CheckTokenValue(tokenJWT)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(utils.ServerError(err))
+	}
+
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.InvalidData(err))
 	}
 
@@ -38,16 +50,6 @@ func CreateCompetition(c *fiber.Ctx) error {
 		return c.Status(statusCode).JSON(serverResponse)
 	}
 
-	// check/find if user exists
-
-	userId, exists, err := queries.GetUserById(input.UserID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(utils.ErrInvalidParam("user_id"))
-	}
-	if !exists || userId == 0 {
-		return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("User"))
-	}
-
 	// assign input to competition struct
 	competition := models.Competition{
 		Name:                input.Name,
@@ -55,7 +57,7 @@ func CreateCompetition(c *fiber.Ctx) error {
 		Image:               input.Image,
 		Tags:                tags,
 		EducationLevels:     educationLevels,
-		UserID:              userId,
+		UserID:              uint(userID.(float64)),
 		EndRegistrationDate: endRegistrationDate,
 		CompetitionURL:      input.CompetitionURL,
 	}
@@ -215,6 +217,24 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
+	tokenJWT := ""
+
+	if authHeader := c.Request().Header.Peek("Authorization"); len(authHeader) > 0 {
+		tokenJWT = strings.Fields(string(authHeader))[1]
+	}
+
+	userID, _, err := middleware.CheckTokenValue(tokenJWT)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(utils.ServerError(err))
+	}
+
+	// check if user role is admin or not and if user id is same as competition user id
+	if userID.(float64) != float64(competition.UserID) {
+		return c.Status(fiber.StatusUnauthorized).JSON(utils.Unauthorized())
+	} else if userID.(float64) != 1 {
+		return c.Status(fiber.StatusUnauthorized).JSON(utils.Unauthorized())
+	}
+
 	var input models.CompetitionInput
 	// parse body to competition
 	if err := c.BodyParser(&input); err != nil {
@@ -248,24 +268,6 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		return c.Status(status).JSON(serverResponse)
 	}
 
-	// check/find if user exists
-	userId, exists, err := queries.GetUserById(input.UserID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(utils.ErrInvalidParam("user_id"))
-	}
-	if !exists || userId == 0 {
-		return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("User"))
-	}
-
-	// check/find if user exists
-	userId, exists, err = queries.GetUserById(input.UserID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(utils.ErrInvalidParam("user_id"))
-	}
-	if !exists || userId == 0 {
-		return c.Status(fiber.StatusNotFound).JSON(utils.IDNotFound("User"))
-	}
-
 	// assign input to competition struct
 	competition = models.Competition{
 		Name:        input.Name,
@@ -273,7 +275,7 @@ func UpdateCompetition(c *fiber.Ctx) error {
 		Image:       input.Image,
 		// Tags:                tags,            // uint id
 		// EducationLevel:      educationLevels, // uint id
-		UserID:              userId, // uint id
+		UserID:              uint(userID.(float64)), // uint id
 		EndRegistrationDate: endRegistrationDate,
 		CompetitionURL:      input.CompetitionURL,
 	}

@@ -15,18 +15,22 @@ type TestimonyControllers struct{}
 
 func (t *TestimonyControllers) Add(c *fiber.Ctx) error {
 	var testimony models.Testimonial
-	tokenJWT := strings.Fields(string(c.Request().Header.Peek("Authorization")))[1]
+	tokenJWT := ""
+
+	if authHeader := c.Request().Header.Peek("Authorization"); len(authHeader) > 0 {
+		tokenJWT = strings.Fields(string(authHeader))[1]
+	}
 
 	if err = c.BodyParser(&testimony); err != nil {
 		return utils.SendResponse(c, fiber.StatusBadRequest, "invalid input data", nil)
 	}
-	
-	userID, _, err :=  middleware.CheckTokenValue(tokenJWT)
+
+	userID, _, err := middleware.CheckTokenValue(tokenJWT)
 	if err != nil {
 		log.Println(err)
 		return utils.SendResponse(c, fiber.StatusUnauthorized, "invalid or expired token", nil)
 	}
-	
+
 	testimony.UserID = uint(userID.(float64))
 	if err = queries.SaveTestimony(&testimony); err != nil {
 		log.Println(err)
@@ -39,8 +43,8 @@ func (t *TestimonyControllers) Add(c *fiber.Ctx) error {
 func (t *TestimonyControllers) GetAll(c *fiber.Ctx) error {
 	testimonials, err := queries.GetAllTestimony()
 	if err != nil {
-		return utils.SendResponse(c, fiber.StatusInternalServerError, "failed get testimonials",nil)
+		return utils.SendResponse(c, fiber.StatusInternalServerError, "failed get testimonials", nil)
 	}
-	
+
 	return utils.SendResponse(c, fiber.StatusOK, "success get testimonials", testimonials)
 }
