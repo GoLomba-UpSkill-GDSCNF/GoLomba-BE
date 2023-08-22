@@ -1,0 +1,43 @@
+version: "3"
+services:
+    api:
+        container_name: golomba-api
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+        ports:
+            - "3000:3000"
+        networks:
+            - mynetwork
+        environment:
+            DB_HOST: db
+            DB_USER: admin
+            DB_PASSWORD: 123456
+            DB_NAME: golomba_db
+            DB_PORT: 3306
+        # waiting for db to start before starting the app
+        command: >
+            sh -c "until nc -z db 3306; do echo 'Waiting for database to start...'; sleep 2; done; ./appstart"
+    db:
+        container_name: mariadb-db
+        image: mariadb
+        restart: always
+        environment:
+            MARIADB_USER: admin
+            MARIADB_PASSWORD: 123456
+            MARIADB_DATABASE: golomba_db
+            MARIADB_ROOT_HOST: "%"
+            MARIADB_RANDOM_ROOT_PASSWORD: "secret"
+        networks:
+            - mynetwork
+        volumes:
+            - dbdata:/var/lib/mysql/data
+
+networks:
+    mynetwork:
+        driver: bridge
+
+volumes:
+    dbdata:

@@ -1,9 +1,9 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/models"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/configs"
@@ -21,7 +21,7 @@ var DB Instance
 func Connect() {
 	var DBConfig = configs.MySQLConfig
 
-	dsn := DBConfig.User + ":" + DBConfig.Password + "@tcp(" + DBConfig.Host + ":" + strconv.Itoa(DBConfig.Port) + ")/" + DBConfig.DBName + "?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", DBConfig.User, DBConfig.Password, DBConfig.Host, DBConfig.Port, DBConfig.DBName)
 	dbConnection, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {

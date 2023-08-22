@@ -1,17 +1,21 @@
 package configs
 
+import (
+	"os"
+)
+
 type DBConfig struct {
 	Host     string
-	Port     int
+	Port     string
 	User     string
 	Password string
 	DBName   string
 }
 
 var MySQLConfig = &DBConfig{
-	Host:     "localhost",
-	Port:     3306,
-	User:     "root",
-	Password: "",
-	DBName:   "golomba_db",
+	Host:     os.Getenv("DB_HOST"),
+	Port:     os.Getenv("DB_PORT"),
+	User:     os.Getenv("DB_USER"),
+	Password: os.Getenv("DB_PASSWORD"),
+	DBName:   os.Getenv("DB_NAME"),
 }
