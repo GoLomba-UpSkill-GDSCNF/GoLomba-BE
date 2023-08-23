@@ -8,4 +8,5 @@ import (
 func SetupSeedersRoutes(app *fiber.App) {
 	seeds := app.Group("/seeders")
 	seeds.Get("/competitions/:seed", seeders.SeedCompetitions)
+	seeds.Get("/roles", seeders.SeedRoles)
 }
