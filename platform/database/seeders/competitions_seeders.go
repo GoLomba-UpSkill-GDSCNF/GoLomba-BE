@@ -3,10 +3,13 @@ package seeders
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/models"
+	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/middleware"
+	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/utils"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database"
 )
 
@@ -16,6 +19,17 @@ func SeedCompetitions(c *fiber.Ctx) error {
 	seedInt, err := strconv.Atoi(seed)
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	tokenJWT := ""
+
+	if authHeader := c.Request().Header.Peek("Authorization"); len(authHeader) > 0 {
+		tokenJWT = strings.Fields(string(authHeader))[1]
+	}
+
+	userID, _, err := middleware.CheckTokenValue(tokenJWT)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(utils.ServerError(err))
 	}
 
 	tags := []models.Tag{
@@ -36,7 +50,7 @@ func SeedCompetitions(c *fiber.Ctx) error {
 			EducationLevels:     educationLevels,
 			CompetitionURL:      "competition_url" + strconv.Itoa(i),
 			EndRegistrationDate: time.Now(),
-			UserID:              4,
+			UserID:              userID.(uint),
 		}
 
 		database.DB.Db.Create(&competition)

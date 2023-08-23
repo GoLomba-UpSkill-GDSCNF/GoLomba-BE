@@ -77,6 +77,7 @@ func IsAdmin() func(*fiber.Ctx) error {
 		userRole := c.Locals("userRole").(float64)
 		if userRole != 1 {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"status":  "error",
 				"message": "you are not admin",
 			})
 		}

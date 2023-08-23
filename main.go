@@ -6,10 +6,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/routes"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database"
+	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database/seeders"
 )
 
 func main() {
 	database.Connect()
+
+	// seeders Roles
+	rolesSeeder := seeders.SeedRoles()
+	log.Println(rolesSeeder)
 
 	app := fiber.New()
 
