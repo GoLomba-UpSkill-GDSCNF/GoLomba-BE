@@ -50,7 +50,7 @@ func SeedCompetitions(c *fiber.Ctx) error {
 			EducationLevels:     educationLevels,
 			CompetitionURL:      "competition_url" + strconv.Itoa(i),
 			EndRegistrationDate: time.Now(),
-			UserID:              userID.(uint),
+			UserID:              uint(userID.(float64)),
 		}
 
 		database.DB.Db.Create(&competition)
