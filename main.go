@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/pkg/routes"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database/seeders"
@@ -17,6 +18,8 @@ func main() {
 	log.Println(rolesSeeder)
 
 	app := fiber.New()
+
+	app.Use(cors.New())
 
 	routes.SetupSeedersRoutes(app)
 	routes.SetupAuthRoutes(app)
