@@ -13,9 +13,11 @@ func SetupCompetitionRoutes(app *fiber.App) {
 	app.Get("/competitions", controllers.GetCompetitions)
 	competition.Get("/:id", controllers.GetCompetition)
 
-	competition.Use(middleware.JWTMiddleware(), middleware.IsAdmin())
+	competition.Use(middleware.JWTMiddleware())
 
 	competition.Post("/", middleware.ValidateField[models.CompetitionInput](), controllers.CreateCompetition)
 	competition.Put("/:id", middleware.ValidateField[models.CompetitionInput](), controllers.UpdateCompetition)
 	competition.Delete("/:id", controllers.DeleteCompetition)
+
+	app.Get("/user/competitions", middleware.JWTMiddleware(), controllers.UserCompetitions)
 }

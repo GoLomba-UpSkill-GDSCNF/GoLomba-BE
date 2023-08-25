@@ -13,7 +13,7 @@ func SetupEducationLevelRoutes(app *fiber.App) {
 	app.Get("/edu-levels", controllers.GetEducationLevels)
 	eduLevel.Get("/:id", controllers.GetEducationLevel)
 
-	eduLevel.Use(middleware.JWTMiddleware())
+	eduLevel.Use(middleware.JWTMiddleware(), middleware.IsAdmin())
 	eduLevel.Post("/", middleware.ValidateField[models.EducationLevel](), controllers.CreateEducationLevel)
 	eduLevel.Put("/:id", middleware.ValidateField[models.EducationLevel](), controllers.UpdateEducationLevel)
 	eduLevel.Delete("/:id", controllers.DeleteEducationLevel)

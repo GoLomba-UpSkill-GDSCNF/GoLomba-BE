@@ -13,3 +13,7 @@ func FindCompetitionByID(id string) *gorm.DB {
 func FindCompetitionByName(name string) *gorm.DB {
 	return database.DB.Db.Where("name = ?", name).First(&models.Competition{})
 }
+
+func FindCompetitionByUserID(userID uint) *gorm.DB {
+	return database.DB.Db.Where("user_id = ?", userID).First(&models.Competition{})
+}
