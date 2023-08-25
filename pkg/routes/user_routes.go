@@ -18,5 +18,7 @@ func SetupAuthRoutes(app *fiber.App) {
 	appUser.Post("/login", middleware.ValidateField[models.User](), userController.Login)
 	appUser.Post("/testimonial", testimonyController.Add)
 
+	appUser.Get("/profile", middleware.JWTMiddleware(), userController.GetProfile)
+
 	app.Get("/testimonials", testimonyController.GetAll)
 }

@@ -1905,6 +1905,52 @@
         }
       }
     },
+    "/user/profile":{
+      "get":{
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "tags" : [ "users" ],
+        "summary" : "Get user profile",
+        "description" : "Get user profile from database",
+        "operationId" : "getProfile",
+        "responses" : {
+          "200" : {
+            "description" : "Success get user profile",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success get user profile"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "user data"
+                    }
+                  }
+                },
+                "examples" : {
+                  "success" : {
+                    "value" : {
+                      "id" : 1,
+                      "username" : "user1",
+                      "email" : "user@gmail.com",
+                      "role" : {
+                        "id" : 1,
+                        "name" : "admin"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/testimonials" : {
       "get" : {
         "tags" : [ "testimonials" ],

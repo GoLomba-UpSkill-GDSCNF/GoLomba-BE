@@ -10,3 +10,9 @@ type User struct {
 	RoleID   uint   `gorm:"type:int"`
 	Role     Role   `json:"role" gorm:"foreignKey:RoleID"`
 }
+
+type UserResponse struct {
+	FullName string      `json:"username"`
+	Email    string      `json:"email"`
+	Role     interface{} `json:"role"`
+}

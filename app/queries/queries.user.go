@@ -1,12 +1,8 @@
 package queries
 
 import (
-	"errors"
-	"strconv"
-
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/app/models"
 	"github.com/notRaihan/GoLomba-BE-GDSC-Final-Project/platform/database"
-	"gorm.io/gorm"
 )
 
 func SaveUser(user *models.User) error {
@@ -31,21 +27,20 @@ func GetUserHashedPassword(email string) (string, error) {
 	return user.Password, nil
 }
 
-func GetUserById(id string) (uint, bool, error) {
-	// convert string to uint
-	userId, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return 0, false, err
+func GetUserById(id uint) (models.User, error) {
+	var user models.User
+	if err := database.DB.Db.Where("id = ?", id).Find(&user).Error; err != nil {
+		return models.User{}, err
 	}
 
-	var user models.User
-	result := database.DB.Db.First(&user, userId)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return 0, false, nil
-		} else {
-			panic(result.Error)
-		}
+	return user, nil
+}
+
+func GetRoleById(id uint) (models.Role, error) {
+	var role models.Role
+	if err := database.DB.Db.Where("id = ?", id).Find(&role).Error; err != nil {
+		return models.Role{}, err
 	}
-	return uint(userId), true, nil // return true if user exists
+
+	return role, nil
 }
