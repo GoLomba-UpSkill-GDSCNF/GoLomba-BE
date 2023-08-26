@@ -358,9 +358,26 @@ func UserCompetitions(c *fiber.Ctx) error {
 		log.Println(err)
 		return utils.SendResponse(c, fiber.StatusInternalServerError, "failed get user profile", nil)
 	}
-	competitions, err := queries.FindCompetitionByUserID(uint(userID.(float64)))
+
+	user, err := queries.GetUserById(uint(userID.(float64)))
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+		log.Println(err)
+		return utils.SendResponse(c, fiber.StatusInternalServerError, "failed get user profile", nil)
+	}
+
+	var competitions []models.Competition
+
+	// if user role is admin get all competitions
+	if user.RoleID == 1 {
+		if err := database.DB.Db.Find(&competitions).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+		}
+	} else {
+		// if user role is not admin get competitions by user id
+		competitions, err = queries.FindCompetitionByUserID(uint(userID.(float64)))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
+		}
 	}
 
 	// check if competitions is empty in db
