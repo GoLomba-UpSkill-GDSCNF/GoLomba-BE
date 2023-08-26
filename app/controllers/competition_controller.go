@@ -358,45 +358,27 @@ func UserCompetitions(c *fiber.Ctx) error {
 		log.Println(err)
 		return utils.SendResponse(c, fiber.StatusInternalServerError, "failed get user profile", nil)
 	}
-
-	// convert string to int
-	page, err := strconv.Atoi(c.Query("page", "1"))
+	competitions, err := queries.FindCompetitionByUserID(uint(userID.(float64)))
 	if err != nil {
-		return utils.SendResponse(c, fiber.StatusBadRequest, "invalid page", nil)
-	}
-
-	sort := c.Query("sort", "asc")
-
-	// pagination
-	pagination := &utils.Pagination{
-		Limit: 8, // default limit is 8
-		Page:  page,
-		Sort:  "id " + sort,
-	}
-	cg := &utils.CompetitionGorm{
-		DB: database.DB.Db,
-	}
-
-	if _, err := cg.ListUserCompetition(pagination, int(userID.(float64))); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 	}
 
 	// check if competitions is empty in db
-	if len(pagination.Rows.([]*models.Competition)) == 0 {
+	if len(competitions) == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(utils.NotFound("Competitions"))
 	}
 
 	var competitionResponses []models.CompetitionResponse
-	for _, competition := range pagination.Rows.([]*models.Competition) {
+	for _, competition := range competitions {
 
 		// iterate through tags and find tags by id
-		tagsResponse, err := queries.CompeFindTagsByNames(*competition)
+		tagsResponse, err := queries.CompeFindTagsByNames(competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}
 
 		// iterate through education_levels and find education_levels by id
-		eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(*competition)
+		eduLevelsResponse, err := queries.CompeFindEducationLevelsByNames(competition)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(utils.ServerError(err))
 		}

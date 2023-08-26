@@ -134,37 +134,3 @@ func (cg *CompetitionGorm) ListCompetition(pagination *Pagination, tags string, 
 	pagination.Rows = competitions
 	return pagination, nil
 }
-
-func UserPaginateCompetitions(value interface{}, pagination *Pagination, db *gorm.DB, userID int) func(db *gorm.DB) *gorm.DB {
-	var totalRows int64
-	query := db.Model(value)
-
-	// query get competitions that user joined
-	query = query.Where("user_id = ?", userID)
-
-	query.Count(&totalRows)
-
-	pagination.TotalRows = totalRows
-	totalPages := int(math.Ceil(float64(totalRows) / float64(pagination.Limit)))
-	pagination.TotalPages = totalPages
-
-	return func(db *gorm.DB) *gorm.DB {
-		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort())
-	}
-}
-
-func (cg *CompetitionGorm) ListUserCompetition(pagination *Pagination, userID int) (*Pagination, error) {
-	var competitions []*models.Competition
-
-	query := cg.DB.Scopes(UserPaginateCompetitions(competitions, pagination, cg.DB, userID))
-
-	// query get competitions that user joined
-	query = query.Where("user_id = ?", userID)
-
-	if err := query.Find(&competitions).Error; err != nil {
-		return nil, err
-	}
-
-	pagination.Rows = competitions
-	return pagination, nil
-}
