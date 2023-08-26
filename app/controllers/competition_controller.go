@@ -421,9 +421,7 @@ func UserCompetitions(c *fiber.Ctx) error {
 		competitionResponses = append(competitionResponses, competitionResponse)
 
 	}
-	pagination.TotalData = len(pagination.Rows.([]*models.Competition))
-	pagination.Rows = competitionResponses
 
 	// return competition response
-	return c.Status(fiber.StatusOK).JSON(pagination)
+	return c.Status(fiber.StatusOK).JSON(competitionResponses)
 }
