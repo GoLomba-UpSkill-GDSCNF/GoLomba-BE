@@ -8,9 +8,10 @@ import (
 )
 
 func SetupEducationLevelRoutes(app *fiber.App) {
-	eduLevel := app.Group("/edu-level")
+	api := app.Group("/api")
+	eduLevel := api.Group("/edu-level")
 
-	app.Get("/edu-levels", controllers.GetEducationLevels)
+	api.Get("/edu-levels", controllers.GetEducationLevels)
 	eduLevel.Get("/:id", controllers.GetEducationLevel)
 
 	eduLevel.Use(middleware.JWTMiddleware(), middleware.IsAdmin())

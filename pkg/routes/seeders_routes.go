@@ -7,7 +7,8 @@ import (
 )
 
 func SetupSeedersRoutes(app *fiber.App) {
-	seeds := app.Group("/seeders")
+	api := app.Group("/api")
+	seeds := api.Group("/seeders")
 
 	seeds.Use(middleware.JWTMiddleware(), middleware.IsAdmin())
 	seeds.Get("/competitions/:seed", seeders.SeedCompetitions)

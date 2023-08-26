@@ -8,9 +8,10 @@ import (
 )
 
 func SetupCompetitionRoutes(app *fiber.App) {
-	competition := app.Group("/competition")
+	api := app.Group("/api")
+	competition := api.Group("/competition")
 
-	app.Get("/competitions", controllers.GetCompetitions)
+	api.Get("/competitions", controllers.GetCompetitions)
 	competition.Get("/:id", controllers.GetCompetition)
 
 	competition.Use(middleware.JWTMiddleware())
@@ -19,5 +20,5 @@ func SetupCompetitionRoutes(app *fiber.App) {
 	competition.Put("/:id", middleware.ValidateField[models.CompetitionInput](), controllers.UpdateCompetition)
 	competition.Delete("/:id", controllers.DeleteCompetition)
 
-	app.Get("/user/competitions", middleware.JWTMiddleware(), controllers.UserCompetitions)
+	api.Get("/user/competitions", middleware.JWTMiddleware(), controllers.UserCompetitions)
 }

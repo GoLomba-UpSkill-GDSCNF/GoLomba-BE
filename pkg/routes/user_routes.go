@@ -13,12 +13,13 @@ func SetupAuthRoutes(app *fiber.App) {
 	testimonyController := controllers.TestimonyControllers{}
 	app.Use(logger.New(logger.Config{}))
 
-	appUser := app.Group("/user")
+	api := app.Group("/api")
+	appUser := api.Group("/user")
 	appUser.Post("/register", middleware.ValidateField[models.User](), userController.Register)
 	appUser.Post("/login", middleware.ValidateField[models.User](), userController.Login)
 	appUser.Post("/testimonial", testimonyController.Add)
 
 	appUser.Get("/profile", middleware.JWTMiddleware(), userController.GetProfile)
 
-	app.Get("/testimonials", testimonyController.GetAll)
+	api.Get("/testimonials", testimonyController.GetAll)
 }

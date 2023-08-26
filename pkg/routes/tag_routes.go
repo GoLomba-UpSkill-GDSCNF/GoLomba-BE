@@ -8,9 +8,10 @@ import (
 )
 
 func SetupTagRoutes(app *fiber.App) {
-	tag := app.Group("/tag")
+	api := app.Group("/api")
+	tag := api.Group("/tag")
 
-	app.Get("/tags", controllers.GetTags)
+	api.Get("/tags", controllers.GetTags)
 	tag.Get("/:id", controllers.GetTag)
 
 	tag.Use(middleware.JWTMiddleware(), middleware.IsAdmin())
